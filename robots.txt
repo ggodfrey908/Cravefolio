@@ -1,0 +1,10 @@
+
+User-agent: *
+Allow: /
+
+Sitemap: https://cravefolio.pages.dev/sitemap.xml
+
+User-agent: *
+Allow: /
+
+Sitemap: https://cravefolio.pages.dev/sitemap.xml
