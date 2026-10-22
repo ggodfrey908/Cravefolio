@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "updated_at": null,
+  "integrations": [
+    {
+      "restaurant": "Starbucks",
+      "status": "research_required",
+      "personal_data_connected": false
+    },
+    {
+      "restaurant": "Chipotle",
+      "status": "research_required",
+      "personal_data_connected": false
+    },
+    {
+      "restaurant": "Panera Bread",
+      "status": "research_required",
+      "personal_data_connected": false
+    },
+    {
+      "restaurant": "McDonald's",
+      "status": "research_required",
+      "personal_data_connected": false
+    }
+  ]
+}
