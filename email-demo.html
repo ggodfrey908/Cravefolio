@@ -1,0 +1,792 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Email Rewards Demo | Cravefolio</title>
+
+<meta name="description" content="Try Cravefolio's interactive email rewards demo. See how restaurant rewards and expiration dates could be organized automatically.">
+
+<link rel="icon" type="image/x-icon" sizes="any" href="/favicon.ico?v=2">
+
+<style>
+:root {
+  --green:#07543d;
+  --cream:#faf8ef;
+  --yellow:#ffc642;
+  --sage:#e8efdf;
+  --muted:#60776a;
+  --border:#e0e7d9;
+}
+
+* { box-sizing:border-box; }
+
+body {
+  margin:0;
+  background:var(--cream);
+  color:var(--green);
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+a { color:inherit; }
+
+header {
+  background:#fffdf7;
+  border-bottom:1px solid var(--border);
+}
+
+.nav {
+  max-width:1100px;
+  margin:auto;
+  padding:19px 24px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:20px;
+}
+
+.logo {
+  font-size:25px;
+  font-weight:800;
+  letter-spacing:-1px;
+  text-decoration:none;
+}
+
+.logo span { color:#d99d00; }
+
+nav {
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+}
+
+nav a {
+  font-size:14px;
+  font-weight:700;
+  text-decoration:none;
+}
+
+nav a:hover,
+nav a.active { color:#a57900; }
+
+.hero {
+  background:var(--green);
+  color:white;
+  padding:55px 24px;
+  text-align:center;
+}
+
+.eyebrow {
+  color:var(--yellow);
+  font-size:12px;
+  letter-spacing:2px;
+  font-weight:800;
+}
+
+.hero h1 {
+  font-family:Georgia,serif;
+  font-size:clamp(35px,6vw,52px);
+  margin:13px 0;
+}
+
+.hero p {
+  color:#dcebdd;
+  max-width:640px;
+  margin:auto;
+  line-height:1.7;
+  font-size:15px;
+}
+
+main {
+  max-width:1100px;
+  margin:auto;
+  padding:38px 24px 75px;
+}
+
+.notice {
+  background:var(--sage);
+  border:1px solid #cfdcc4;
+  padding:17px 20px;
+  border-radius:13px;
+  font-size:13px;
+  line-height:1.7;
+  margin-bottom:25px;
+}
+
+.demo-layout {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+  align-items:start;
+}
+
+.panel {
+  background:white;
+  border:1px solid var(--border);
+  border-radius:17px;
+  padding:25px;
+  min-width:0;
+}
+
+.panel h2 {
+  font-family:Georgia,serif;
+  font-size:25px;
+  margin:0 0 10px;
+}
+
+.panel-description {
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.6;
+  margin-bottom:19px;
+}
+
+label {
+  display:block;
+  font-size:13px;
+  font-weight:800;
+  margin-bottom:9px;
+}
+
+textarea {
+  display:block;
+  width:100%;
+  min-height:270px;
+  resize:vertical;
+  padding:15px;
+  border:1px solid #d2ddcd;
+  border-radius:12px;
+  background:#fffdf7;
+  color:#173c2d;
+  font:14px/1.7 Arial,Helvetica,sans-serif;
+  outline:none;
+}
+
+textarea:focus {
+  border-color:var(--green);
+  box-shadow:0 0 0 2px #b8d4b8;
+}
+
+.samples {
+  display:flex;
+  flex-wrap:wrap;
+  gap:9px;
+  margin:15px 0 20px;
+}
+
+.sample {
+  background:var(--sage);
+  color:var(--green);
+  border:1px solid #cfddc8;
+  border-radius:20px;
+  padding:9px 12px;
+  cursor:pointer;
+  font-size:12px;
+  font-weight:800;
+}
+
+.sample:hover {
+  background:#d7e8ca;
+}
+
+.actions {
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+button {
+  font-family:inherit;
+}
+
+.primary {
+  border:0;
+  background:var(--yellow);
+  color:#173c2d;
+  border-radius:10px;
+  padding:13px 19px;
+  cursor:pointer;
+  font-size:13px;
+  font-weight:800;
+}
+
+.primary:hover { background:#f2b923; }
+
+.secondary {
+  border:1px solid #cbdac8;
+  background:white;
+  color:var(--green);
+  border-radius:10px;
+  padding:13px 19px;
+  cursor:pointer;
+  font-size:13px;
+  font-weight:800;
+}
+
+.secondary:hover { background:var(--sage); }
+
+.result-placeholder {
+  min-height:315px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  color:var(--muted);
+}
+
+.placeholder-icon {
+  width:72px;
+  height:72px;
+  background:var(--sage);
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  font-size:32px;
+  margin-bottom:17px;
+}
+
+.result-placeholder h3 {
+  color:var(--green);
+  font-family:Georgia,serif;
+  font-size:23px;
+  margin:0 0 9px;
+}
+
+.result-placeholder p {
+  max-width:310px;
+  line-height:1.7;
+  font-size:13px;
+}
+
+.result {
+  display:none;
+}
+
+.result-heading {
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+  margin-bottom:22px;
+}
+
+.result-heading h3 {
+  font-family:Georgia,serif;
+  font-size:23px;
+  margin:0;
+}
+
+.badge {
+  background:var(--sage);
+  color:var(--green);
+  border-radius:20px;
+  padding:8px 10px;
+  font-size:10px;
+  font-weight:800;
+}
+
+.field {
+  padding:15px 0;
+  border-top:1px solid var(--border);
+}
+
+.field-label {
+  color:var(--muted);
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  font-weight:800;
+  margin-bottom:8px;
+}
+
+.field-value {
+  font-size:16px;
+  font-weight:700;
+  line-height:1.5;
+  overflow-wrap:anywhere;
+}
+
+.result-note {
+  background:#fff3d0;
+  color:#775a1d;
+  border-radius:11px;
+  padding:13px;
+  font-size:12px;
+  line-height:1.6;
+  margin-top:17px;
+}
+
+.how {
+  margin-top:40px;
+  background:var(--sage);
+  padding:30px;
+  border-radius:17px;
+}
+
+.how h2 {
+  font-family:Georgia,serif;
+  font-size:27px;
+  margin:0 0 20px;
+}
+
+.steps {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:22px;
+}
+
+.step-number {
+  width:34px;
+  height:34px;
+  background:var(--green);
+  color:white;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  font-size:13px;
+  font-weight:800;
+}
+
+.step h3 {
+  font-size:15px;
+  margin:14px 0 8px;
+}
+
+.step p {
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.6;
+  margin:0;
+}
+
+footer {
+  background:var(--green);
+  color:white;
+  padding:30px 20px;
+  text-align:center;
+  font-size:12px;
+}
+
+footer a {
+  text-decoration:none;
+  margin:0 9px;
+}
+
+footer p {
+  color:#c9dfd0;
+  margin-top:18px;
+}
+
+@media(max-width:750px) {
+  .demo-layout,
+  .steps {
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:480px) {
+  .nav { flex-direction:column; }
+  .panel { padding:19px; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="nav">
+    <a class="logo" href="/">Crave<span>folio.</span></a>
+
+    <nav aria-label="Main navigation">
+      <a href="/">Home</a>
+      <a href="/restaurants.html">Restaurants</a>
+      <a href="/rewards.html">Rewards</a>
+      <a class="active" href="/email-demo.html" aria-current="page">Email Demo</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="eyebrow">A TASTE OF WHAT'S COMING</div>
+  <h1>Turn Emails Into Rewards.</h1>
+  <p>
+    See how Cravefolio could turn restaurant reward emails
+    into organized, easy-to-read information.
+    Try a fictional sample or paste your own text.
+  </p>
+</section>
+
+<main>
+
+  <div class="notice">
+    <strong>Private Browser Demo:</strong>
+    The analysis below runs entirely in your browser.
+    Email text is not sent to Cravefolio, uploaded, or saved.
+    This demo uses simple pattern matching and may miss or
+    misinterpret details. For privacy, we recommend testing
+    with the fictional examples provided.
+  </div>
+
+  <div class="demo-layout">
+
+    <section class="panel" aria-labelledby="input-title">
+
+      <h2 id="input-title">Your Email</h2>
+
+      <p class="panel-description">
+        Select a fictional example below, or paste the text
+        of a restaurant rewards email to test the concept.
+      </p>
+
+      <label for="emailText">Email content</label>
+
+      <textarea
+        id="emailText"
+        maxlength="15000"
+        placeholder="Paste a restaurant rewards email here..."
+      ></textarea>
+
+      <div class="samples">
+        <button type="button" class="sample" data-sample="mcdonalds">
+          🍔 McDonald's Sample
+        </button>
+
+        <button type="button" class="sample" data-sample="starbucks">
+          ☕ Starbucks Sample
+        </button>
+
+        <button type="button" class="sample" data-sample="chipotle">
+          🌯 Chipotle Sample
+        </button>
+
+        <button type="button" class="sample" data-sample="panera">
+          🥖 Panera Sample
+        </button>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="primary" id="analyze">
+          Analyze Email →
+        </button>
+
+        <button type="button" class="secondary" id="clear">
+          Clear
+        </button>
+      </div>
+
+    </section>
+
+    <section class="panel" aria-labelledby="result-title">
+
+      <h2 id="result-title">Extracted Reward</h2>
+
+      <p class="panel-description">
+        Here's how Cravefolio interprets the email.
+      </p>
+
+      <div class="result-placeholder" id="placeholder">
+        <div class="placeholder-icon" aria-hidden="true">🎁</div>
+
+        <h3>Ready when you are!</h3>
+
+        <p>
+          Choose a sample email and click Analyze Email
+          to see the results appear here.
+        </p>
+      </div>
+
+      <div class="result" id="result" aria-live="polite">
+
+        <div class="result-heading">
+          <h3>Reward Summary</h3>
+          <span class="badge">Demo Analysis</span>
+        </div>
+
+        <div class="field">
+          <div class="field-label">Restaurant</div>
+          <div class="field-value" id="restaurantResult">—</div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">Reward or Offer</div>
+          <div class="field-value" id="rewardResult">—</div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">Expiration Date</div>
+          <div class="field-value" id="expirationResult">—</div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">Detected Points</div>
+          <div class="field-value" id="pointsResult">—</div>
+        </div>
+
+        <div class="result-note">
+          This is an experimental text interpretation, not
+          verification of a restaurant account or offer.
+          Always confirm reward terms with the restaurant.
+        </div>
+
+      </div>
+
+    </section>
+
+  </div>
+
+  <section class="how">
+    <h2>How the Future Version Could Work</h2>
+
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-number">1</div>
+        <h3>Receive an Email</h3>
+        <p>
+          A restaurant sends an offer or loyalty update
+          to your inbox.
+        </p>
+      </div>
+
+      <div class="step">
+        <div class="step-number">2</div>
+        <h3>Identify the Reward</h3>
+        <p>
+          Cravefolio processes an email you've
+          explicitly chosen to share.
+        </p>
+      </div>
+
+      <div class="step">
+        <div class="step-number">3</div>
+        <h3>Organize Your Perks</h3>
+        <p>
+          Supported rewards could appear together
+          in your dashboard with expiration details.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div>
+    <a href="/">Home</a>
+    <a href="/restaurants.html">Restaurants</a>
+    <a href="/rewards.html">Rewards</a>
+    <a href="/about.html">About</a>
+    <a href="/contact.html">Contact</a>
+    <a href="/privacy.html">Privacy</a>
+    <a href="/terms.html">Terms</a>
+  </div>
+
+  <p>© 2026 Cravefolio. Your rewards, served.</p>
+</footer>
+
+<script>
+"use strict";
+
+/*
+  Fictional examples only.
+  These are not actual restaurant-issued offers.
+*/
+
+const samples = {
+  mcdonalds:
+`From: McDonald's Rewards
+Subject: Your fictional reward is ready!
+
+Thanks for being a rewards member.
+
+You have earned 1,500 points.
+
+Your reward: Free medium fries.
+
+Offer expires: November 15, 2026.
+
+This is a fictional demonstration email.`,
+
+  starbucks:
+`From: Starbucks Rewards
+Subject: A fictional reward just for you
+
+Your current example balance is 250 Stars.
+
+Your reward: Free bakery item.
+
+Valid until December 10, 2026.
+
+This is a fictional demonstration email.`,
+
+  chipotle:
+`From: Chipotle Rewards
+Subject: Your example reward
+
+You currently have 800 points.
+
+Your reward: Free guacamole.
+
+Expires on November 30, 2026.
+
+This is a fictional demonstration email.`,
+
+  panera:
+`From: MyPanera
+Subject: A little something for you
+
+Your reward: Free pastry.
+
+Redeem by December 5, 2026.
+
+This is a fictional demonstration email.`
+};
+
+const restaurantNames = [
+  ["McDonald's", /mcdonald'?s|mymcdonald/i],
+  ["Chick-fil-A", /chick[\s-]?fil[\s-]?a/i],
+  ["Starbucks", /starbucks/i],
+  ["Taco Bell", /taco bell/i],
+  ["Wendy's", /wendy'?s/i],
+  ["Chipotle", /chipotle/i],
+  ["Dunkin'", /dunkin/i],
+  ["Domino's", /domino'?s/i],
+  ["Panera Bread", /panera|mypanera/i],
+  ["Burger King", /burger king|royal perks/i]
+];
+
+const emailText = document.getElementById("emailText");
+const placeholder = document.getElementById("placeholder");
+const result = document.getElementById("result");
+
+function findRestaurant(text) {
+  for (const [name, pattern] of restaurantNames) {
+    if (pattern.test(text)) {
+      return name;
+    }
+  }
+
+  return "Not identified";
+}
+
+function findReward(text) {
+  const lines = text.split(/\r?\n/);
+
+  const patterns = [
+    /(?:your reward|your offer|reward|offer)\s*:\s*(.+)/i,
+    /(?:you(?:'ve| have)? earned)\s+(?:a\s+)?(free\s+.+)/i
+  ];
+
+  for (const line of lines) {
+    for (const pattern of patterns) {
+      const match = line.match(pattern);
+
+      if (match) {
+        return match[1].trim().slice(0, 160);
+      }
+    }
+  }
+
+  return "No supported reward description detected";
+}
+
+function findExpiration(text) {
+  const month =
+    "(?:January|February|March|April|May|June|July|" +
+    "August|September|October|November|December)";
+
+  const patterns = [
+    new RegExp(
+      "(?:expires?\\s*(?:on|:)?|valid until\\s*:?|redeem by\\s*:?)\\s*" +
+      "(" + month + "\\s+\\d{1,2},?\\s+\\d{4})",
+      "i"
+    ),
+
+    /(?:expires?|valid until|redeem by)\s*(?:on|:)?\s*(\d{1,2}\/\d{1,2}\/\d{4})/i
+  ];
+
+  for (const pattern of patterns) {
+    const match = text.match(pattern);
+
+    if (match) {
+      const date = new Date(match[1]);
+
+      if (!Number.isNaN(date.getTime())) {
+        return date.toLocaleDateString("en-US", {
+          year:"numeric",
+          month:"long",
+          day:"numeric",
+          timeZone:"UTC"
+        });
+      }
+    }
+  }
+
+  return "No supported expiration date detected";
+}
+
+function findPoints(text) {
+  const match = text.match(
+    /(\d{1,3}(?:,\d{3})*|\d+)\s*(?:reward\s+)?(?:points|stars|crowns)\b/i
+  );
+
+  if (match) {
+    return match[0];
+  }
+
+  return "No points detected";
+}
+
+function analyzeEmail() {
+  const text = emailText.value.trim();
+
+  if (!text) {
+    alert("Please select a sample or paste email text first.");
+    emailText.focus();
+    return;
+  }
+
+  const restaurant = findRestaurant(text);
+  const reward = findReward(text);
+  const expiration = findExpiration(text);
+  const points = findPoints(text);
+
+  document.getElementById("restaurantResult").textContent = restaurant;
+  document.getElementById("rewardResult").textContent = reward;
+  document.getElementById("expirationResult").textContent = expiration;
+  document.getElementById("pointsResult").textContent = points;
+
+  placeholder.style.display = "none";
+  result.style.display = "block";
+}
+
+document.querySelectorAll("[data-sample]").forEach(button => {
+  button.addEventListener("click", () => {
+    const sampleName = button.dataset.sample;
+
+    emailText.value = samples[sampleName];
+
+    placeholder.style.display = "flex";
+    result.style.display = "none";
+  });
+});
+
+document.getElementById("analyze").addEventListener(
+  "click",
+  analyzeEmail
+);
+
+document.getElementById("clear").addEventListener("click", () => {
+  emailText.value = "";
+  result.style.display = "none";
+  placeholder.style.display = "flex";
+  emailText.focus();
+});
+</script>
+
+</body>
+</html>
