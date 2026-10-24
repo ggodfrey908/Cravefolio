@@ -714,7 +714,8 @@ function receiveDemoTransfer() {
     !expiration;
 
   rewards.unshift({
-    id:"transferred-demo",
+    id:"saved-" + Date.now() + "-" +
+      Math.random().toString(36).slice(2,9),
     restaurant:restaurant,
     emoji:emojiMap[restaurant] || "🎁",
     title:reward,
