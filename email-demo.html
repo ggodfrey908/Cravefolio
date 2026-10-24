@@ -1187,6 +1187,8 @@ function analyzeEmail() {
     ["Expiration", expiration],
     ["Points", points]
   ]);
+  
+  document.getElementById("addToInbox").disabled = false;
 
   placeholder.style.display = "none";
   result.style.display = "block";
@@ -1266,6 +1268,48 @@ document.getElementById("clear").addEventListener(
     emailText.focus();
   }
 );
+
+/* Transfer extracted results to the demo inbox */
+
+document.getElementById("addToInbox").addEventListener(
+  "click",
+  () => {
+    const text = emailText.value.trim();
+
+    if (!text) return;
+
+    const restaurant = findRestaurant(text);
+    const reward = findReward(text);
+    const expiration = findExpiration(text);
+    const points = findPoints(text);
+
+    const transfer = {
+      restaurant: restaurant.value,
+      restaurantStatus: restaurant.status,
+      reward: reward.value,
+      rewardStatus: reward.status,
+      expiration: expiration.value,
+      expirationStatus: expiration.status,
+      points: points.value,
+      pointsStatus: points.status
+    };
+
+    try {
+      sessionStorage.setItem(
+        "cravefolioDemoTransfer",
+        JSON.stringify(transfer)
+      );
+
+      window.location.href = "/inbox.html";
+    } catch (error) {
+      alert(
+        "Your browser could not transfer this result. " +
+        "Please check your browser's storage settings."
+      );
+    }
+  }
+);
+
 </script>
 
 </body>
