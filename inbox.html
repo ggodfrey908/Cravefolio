@@ -873,7 +873,7 @@ function createCard(item) {
   details.append(
     createDetail("Points",item.points),
     createDetail("Expiration",formatDate(item.expiration)),
-    createDetail("Source","Fictional Demo Email")
+    createDetail("Source",item.source || "Fictional Demo Email")
   );
 
   const note = document.createElement("div");
