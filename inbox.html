@@ -628,6 +628,108 @@ const rewards = [
   }
 ];
 
+/*
+  Receive one explicitly transferred demo result.
+
+  Only extracted fields are transferred.
+  Original email text is not transferred.
+  The transfer is removed after reading.
+*/
+
+function receiveDemoTransfer() {
+  let transfer;
+
+  try {
+    const saved = sessionStorage.getItem(
+      "cravefolioDemoTransfer"
+    );
+
+    if (!saved) return;
+
+    sessionStorage.removeItem(
+      "cravefolioDemoTransfer"
+    );
+
+    transfer = JSON.parse(saved);
+  } catch (error) {
+    return;
+  }
+
+  if (
+    !transfer ||
+    typeof transfer !== "object" ||
+    Array.isArray(transfer)
+  ) {
+    return;
+  }
+
+  const safeText = (value, fallback) => {
+    return typeof value === "string"
+      ? value.slice(0, 180)
+      : fallback;
+  };
+
+  const restaurant = safeText(
+    transfer.restaurant,
+    "Unidentified Restaurant"
+  );
+
+  const reward = safeText(
+    transfer.reward,
+    "Reward needs review"
+  );
+
+  const points = safeText(
+    transfer.points,
+    "Not provided"
+  );
+
+  const emojiMap = {
+    "McDonald's":"🍔",
+    "Starbucks":"☕",
+    "Chipotle":"🌯",
+    "Panera Bread":"🥖",
+    "Taco Bell":"🌮",
+    "Dunkin'":"🍩",
+    "Wendy's":"🍟",
+    "Burger King":"👑",
+    "Domino's":"🍕",
+    "Chick-fil-A":"🐔"
+  };
+
+  let expiration = null;
+
+  if (transfer.expirationStatus === "detected") {
+    const date = new Date(transfer.expiration);
+
+    if (!Number.isNaN(date.getTime())) {
+      expiration = date.toISOString().slice(0,10);
+    }
+  }
+
+  const needsReview =
+    transfer.restaurantStatus !== "detected" ||
+    transfer.rewardStatus !== "detected" ||
+    transfer.expirationStatus !== "detected" ||
+    !expiration;
+
+  rewards.unshift({
+    id:"transferred-demo",
+    restaurant:restaurant,
+    emoji:emojiMap[restaurant] || "🎁",
+    title:reward,
+    points:points,
+    expiration:expiration,
+    review:needsReview,
+    source:"Email Analyzer Demo",
+    note:needsReview
+      ? "Transferred from the browser demo. Some extracted details require verification."
+      : "Transferred from the browser demo. This is an unverified text interpretation."
+  });
+}
+
+receiveDemoTransfer();
+
 const cards = document.getElementById("cards");
 const search = document.getElementById("search");
 const restaurantFilter =
