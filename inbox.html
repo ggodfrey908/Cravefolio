@@ -1,0 +1,874 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Rewards Inbox | Cravefolio</title>
+
+<meta name="description" content="Explore Cravefolio's interactive demonstration rewards inbox. Organize restaurant offers, points, and expiration dates.">
+
+<link rel="icon" type="image/x-icon" sizes="any" href="/favicon.ico?v=2">
+
+<style>
+:root {
+  --green:#07543d;
+  --cream:#faf8ef;
+  --yellow:#ffc642;
+  --sage:#e8efdf;
+  --muted:#60776a;
+  --border:#e0e7d9;
+}
+
+* { box-sizing:border-box; }
+
+body {
+  margin:0;
+  background:var(--cream);
+  color:var(--green);
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+a { color:inherit; }
+
+header {
+  background:#fffdf7;
+  border-bottom:1px solid var(--border);
+}
+
+.nav {
+  max-width:1150px;
+  margin:auto;
+  padding:19px 24px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:20px;
+}
+
+.logo {
+  font-size:25px;
+  font-weight:800;
+  letter-spacing:-1px;
+  text-decoration:none;
+}
+
+.logo span { color:#d99d00; }
+
+nav {
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+}
+
+nav a {
+  font-size:14px;
+  font-weight:700;
+  text-decoration:none;
+}
+
+nav a:hover,
+nav a.active { color:#a57900; }
+
+.hero {
+  background:var(--green);
+  color:white;
+  padding:49px 24px;
+}
+
+.hero-inner {
+  max-width:1100px;
+  margin:auto;
+}
+
+.eyebrow {
+  color:var(--yellow);
+  font-size:12px;
+  letter-spacing:2px;
+  font-weight:800;
+}
+
+.hero h1 {
+  font-family:Georgia,serif;
+  font-size:clamp(35px,6vw,50px);
+  margin:13px 0;
+}
+
+.hero p {
+  color:#dcebdd;
+  max-width:650px;
+  font-size:14px;
+  line-height:1.7;
+}
+
+main {
+  max-width:1150px;
+  margin:auto;
+  padding:30px 24px 75px;
+}
+
+.notice {
+  background:var(--sage);
+  border:1px solid #cfddc8;
+  border-radius:13px;
+  padding:16px 19px;
+  font-size:13px;
+  line-height:1.7;
+  margin-bottom:25px;
+}
+
+.stats {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:13px;
+  margin-bottom:27px;
+}
+
+.stat {
+  background:white;
+  border:1px solid var(--border);
+  border-radius:13px;
+  padding:19px;
+}
+
+.stat-number {
+  font-family:Georgia,serif;
+  font-size:31px;
+  font-weight:800;
+  margin-bottom:7px;
+}
+
+.stat-label {
+  color:var(--muted);
+  font-size:12px;
+  font-weight:700;
+}
+
+.toolbar {
+  background:white;
+  border:1px solid var(--border);
+  border-radius:15px;
+  padding:18px;
+  display:grid;
+  grid-template-columns:1.5fr 1fr 1fr 1fr;
+  gap:12px;
+  margin-bottom:22px;
+}
+
+.control label {
+  display:block;
+  font-size:11px;
+  font-weight:800;
+  margin-bottom:8px;
+}
+
+input,select {
+  width:100%;
+  height:43px;
+  padding:0 12px;
+  border:1px solid #d2ddcd;
+  border-radius:9px;
+  background:#fffdf7;
+  color:#173c2d;
+  font:13px Arial,Helvetica,sans-serif;
+}
+
+input:focus,select:focus {
+  outline:2px solid #b8d4b8;
+  border-color:var(--green);
+}
+
+.section-heading {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-bottom:17px;
+}
+
+.section-heading h2 {
+  font-family:Georgia,serif;
+  font-size:26px;
+  margin:0;
+}
+
+#count {
+  font-size:12px;
+  color:var(--muted);
+  font-weight:700;
+}
+
+.cards {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:17px;
+}
+
+.reward-card {
+  background:white;
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:21px;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:15px;
+}
+
+.card-top {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+
+.restaurant {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:15px;
+  font-weight:800;
+}
+
+.emoji {
+  width:38px;
+  height:38px;
+  border-radius:11px;
+  background:var(--sage);
+  display:grid;
+  place-items:center;
+  font-size:21px;
+  flex-shrink:0;
+}
+
+.status {
+  border-radius:20px;
+  padding:7px 9px;
+  font-size:10px;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+.status.active {
+  background:#e1f0df;
+  color:#286039;
+}
+
+.status.review {
+  background:#fff0c4;
+  color:#795816;
+}
+
+.status.expired {
+  background:#f3e5e2;
+  color:#91483e;
+}
+
+.reward-title {
+  font-family:Georgia,serif;
+  font-size:23px;
+  font-weight:700;
+  line-height:1.25;
+  min-height:55px;
+}
+
+.details {
+  display:grid;
+  gap:10px;
+  margin-top:auto;
+}
+
+.detail {
+  display:flex;
+  justify-content:space-between;
+  align-items:start;
+  gap:10px;
+  padding-top:11px;
+  border-top:1px solid var(--border);
+  font-size:12px;
+}
+
+.detail span:first-child { color:var(--muted); }
+
+.detail strong {
+  text-align:right;
+  overflow-wrap:anywhere;
+}
+
+.card-note {
+  font-size:11px;
+  color:var(--muted);
+  line-height:1.6;
+}
+
+.empty {
+  grid-column:1/-1;
+  text-align:center;
+  background:white;
+  border:1px solid var(--border);
+  border-radius:15px;
+  padding:50px 20px;
+}
+
+.empty h3 {
+  font-family:Georgia,serif;
+  font-size:24px;
+}
+
+.empty p {
+  font-size:13px;
+  color:var(--muted);
+}
+
+.actions {
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:28px;
+}
+
+.button {
+  display:inline-block;
+  padding:13px 19px;
+  border-radius:10px;
+  font-size:13px;
+  font-weight:800;
+  text-decoration:none;
+}
+
+.button.primary {
+  background:var(--yellow);
+  color:#173c2d;
+}
+
+.button.secondary {
+  background:white;
+  border:1px solid #cbdac8;
+}
+
+button.reset {
+  border:0;
+  background:transparent;
+  color:var(--green);
+  font-weight:800;
+  cursor:pointer;
+  font-size:12px;
+}
+
+footer {
+  background:var(--green);
+  color:white;
+  padding:30px 20px;
+  text-align:center;
+  font-size:12px;
+}
+
+footer a {
+  text-decoration:none;
+  margin:0 9px;
+}
+
+footer p {
+  color:#c9dfd0;
+  margin-top:18px;
+}
+
+@media(max-width:950px) {
+  .toolbar { grid-template-columns:repeat(2,1fr); }
+  .cards { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+
+@media(max-width:650px) {
+  .stats { grid-template-columns:repeat(2,1fr); }
+  .cards,.toolbar { grid-template-columns:1fr; }
+  .nav { flex-direction:column; }
+  .reward-title { min-height:0; }
+}
+
+@media(max-width:370px) {
+  .stats { grid-template-columns:1fr; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="nav">
+    <a class="logo" href="/">Crave<span>folio.</span></a>
+
+    <nav aria-label="Main navigation">
+      <a href="/">Home</a>
+      <a href="/restaurants.html">Restaurants</a>
+      <a href="/rewards.html">Rewards</a>
+      <a href="/email-demo.html">Email Demo</a>
+      <a class="active" href="/inbox.html" aria-current="page">Inbox</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">YOUR PERKS, ALL IN ONE PLACE</div>
+    <h1>Rewards Inbox.</h1>
+    <p>
+      A preview of how Cravefolio could organize
+      restaurant rewards, expiration dates, and points
+      in one convenient place.
+    </p>
+  </div>
+</section>
+
+<main>
+
+  <div class="notice">
+    <strong>Demonstration Inbox:</strong>
+    Every reward displayed here is fictional and generated
+    for testing. These are not redeemable offers or connected
+    loyalty balances. No customer data is being retrieved.
+    Expiration statuses are calculated against your device's
+    current date.
+  </div>
+
+  <section class="stats" aria-label="Inbox summary">
+    <div class="stat">
+      <div class="stat-number" id="totalStat">0</div>
+      <div class="stat-label">Example Rewards</div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-number" id="activeStat">0</div>
+      <div class="stat-label">Active Examples</div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-number" id="reviewStat">0</div>
+      <div class="stat-label">Need Review</div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-number" id="expiredStat">0</div>
+      <div class="stat-label">Expired Examples</div>
+    </div>
+  </section>
+
+  <section class="toolbar" aria-label="Filter rewards">
+
+    <div class="control">
+      <label for="search">Search Rewards</label>
+      <input id="search" type="search"
+        placeholder="Search restaurant or reward...">
+    </div>
+
+    <div class="control">
+      <label for="restaurantFilter">Restaurant</label>
+      <select id="restaurantFilter">
+        <option value="all">All Restaurants</option>
+      </select>
+    </div>
+
+    <div class="control">
+      <label for="statusFilter">Status</label>
+      <select id="statusFilter">
+        <option value="all">All Statuses</option>
+        <option value="active">Active</option>
+        <option value="review">Needs Review</option>
+        <option value="expired">Expired</option>
+      </select>
+    </div>
+
+    <div class="control">
+      <label for="sortFilter">Sort By</label>
+      <select id="sortFilter">
+        <option value="soonest">Expiration: Soonest First</option>
+        <option value="latest">Expiration: Latest First</option>
+        <option value="restaurant">Restaurant: A–Z</option>
+      </select>
+    </div>
+
+  </section>
+
+  <div class="section-heading">
+    <h2>Example Rewards</h2>
+
+    <div>
+      <span id="count" aria-live="polite"></span>
+      &nbsp;
+      <button class="reset" id="reset" type="button">
+        Reset Filters
+      </button>
+    </div>
+  </div>
+
+  <section id="cards" class="cards" aria-label="Reward cards">
+  </section>
+
+  <div class="actions">
+    <a class="button primary" href="/email-demo.html">
+      Try the Email Analyzer →
+    </a>
+
+    <a class="button secondary" href="/rewards.html">
+      Back to Rewards Dashboard
+    </a>
+  </div>
+
+</main>
+
+<footer>
+  <div>
+    <a href="/">Home</a>
+    <a href="/restaurants.html">Restaurants</a>
+    <a href="/rewards.html">Rewards</a>
+    <a href="/email-demo.html">Email Demo</a>
+    <a href="/about.html">About</a>
+    <a href="/contact.html">Contact</a>
+    <a href="/privacy.html">Privacy</a>
+    <a href="/terms.html">Terms</a>
+  </div>
+
+  <p>© 2026 Cravefolio. Your rewards, served.</p>
+</footer>
+
+<script>
+"use strict";
+
+/*
+  CRAVEFOLIO DEMONSTRATION INBOX
+
+  All entries are fictional.
+  No accounts, network requests, or persistent storage.
+
+  Expiration status is derived from the device date.
+  ISO dates are interpreted as calendar dates, not timestamps.
+*/
+
+const rewards = [
+  {
+    id:1,
+    restaurant:"McDonald's",
+    emoji:"🍔",
+    title:"Free Medium Fries",
+    points:"1,500 points",
+    expiration:"2026-11-15",
+    review:false,
+    note:"Fictional reward example."
+  },
+  {
+    id:2,
+    restaurant:"Starbucks",
+    emoji:"☕",
+    title:"Free Bakery Item",
+    points:"250 Stars",
+    expiration:"2026-12-10",
+    review:false,
+    note:"Fictional reward example."
+  },
+  {
+    id:3,
+    restaurant:"Chipotle",
+    emoji:"🌯",
+    title:"Free Guacamole",
+    points:"800 points",
+    expiration:"2026-11-30",
+    review:false,
+    note:"Fictional reward example."
+  },
+  {
+    id:4,
+    restaurant:"Panera Bread",
+    emoji:"🥖",
+    title:"Free Pastry",
+    points:"Not provided",
+    expiration:"2026-12-05",
+    review:false,
+    note:"Fictional reward example."
+  },
+  {
+    id:5,
+    restaurant:"Taco Bell",
+    emoji:"🌮",
+    title:"Free Crunchy Taco",
+    points:"Not provided",
+    expiration:null,
+    review:true,
+    note:"Expiration date was not provided."
+  },
+  {
+    id:6,
+    restaurant:"Dunkin'",
+    emoji:"🍩",
+    title:"Points Update",
+    points:"650 points",
+    expiration:null,
+    review:true,
+    note:"No specific reward or expiration was identified."
+  },
+  {
+    id:7,
+    restaurant:"Wendy's",
+    emoji:"🍟",
+    title:"Free Small Frosty",
+    points:"Not provided",
+    expiration:"2026-12-20",
+    review:false,
+    note:"Fictional reward example."
+  },
+  {
+    id:8,
+    restaurant:"Burger King",
+    emoji:"👑",
+    title:"Possible Free Item",
+    points:"Not provided",
+    expiration:null,
+    review:true,
+    note:"Reward details and expiration need review."
+  }
+];
+
+const cards = document.getElementById("cards");
+const search = document.getElementById("search");
+const restaurantFilter =
+  document.getElementById("restaurantFilter");
+const statusFilter =
+  document.getElementById("statusFilter");
+const sortFilter =
+  document.getElementById("sortFilter");
+
+function todayISO() {
+  const now = new Date();
+
+  const year = now.getFullYear();
+  const month = String(now.getMonth()+1).padStart(2,"0");
+  const day = String(now.getDate()).padStart(2,"0");
+
+  return `${year}-${month}-${day}`;
+}
+
+function getStatus(item) {
+  if (item.review || !item.expiration) {
+    return "review";
+  }
+
+  if (item.expiration < todayISO()) {
+    return "expired";
+  }
+
+  return "active";
+}
+
+function formatDate(value) {
+  if (!value) return "Needs review";
+
+  const [year,month,day] = value.split("-").map(Number);
+
+  const date = new Date(Date.UTC(year,month-1,day));
+
+  return date.toLocaleDateString("en-US",{
+    year:"numeric",
+    month:"short",
+    day:"numeric",
+    timeZone:"UTC"
+  });
+}
+
+function updateStats() {
+  const counts = {
+    total:rewards.length,
+    active:0,
+    review:0,
+    expired:0
+  };
+
+  rewards.forEach(item => {
+    counts[getStatus(item)]++;
+  });
+
+  document.getElementById("totalStat").textContent =
+    counts.total;
+
+  document.getElementById("activeStat").textContent =
+    counts.active;
+
+  document.getElementById("reviewStat").textContent =
+    counts.review;
+
+  document.getElementById("expiredStat").textContent =
+    counts.expired;
+}
+
+function populateRestaurants() {
+  const names = [...new Set(
+    rewards.map(item => item.restaurant)
+  )].sort();
+
+  names.forEach(name => {
+    const option = document.createElement("option");
+    option.value = name;
+    option.textContent = name;
+    restaurantFilter.appendChild(option);
+  });
+}
+
+function createDetail(label,value) {
+  const row = document.createElement("div");
+  row.className = "detail";
+
+  const name = document.createElement("span");
+  name.textContent = label;
+
+  const content = document.createElement("strong");
+  content.textContent = value;
+
+  row.append(name,content);
+
+  return row;
+}
+
+function createCard(item) {
+  const status = getStatus(item);
+
+  const labels = {
+    active:"Active",
+    review:"Needs Review",
+    expired:"Expired"
+  };
+
+  const card = document.createElement("article");
+  card.className = "reward-card";
+
+  const top = document.createElement("div");
+  top.className = "card-top";
+
+  const restaurant = document.createElement("div");
+  restaurant.className = "restaurant";
+
+  const emoji = document.createElement("div");
+  emoji.className = "emoji";
+  emoji.textContent = item.emoji;
+  emoji.setAttribute("aria-hidden","true");
+
+  const restaurantName = document.createElement("span");
+  restaurantName.textContent = item.restaurant;
+
+  restaurant.append(emoji,restaurantName);
+
+  const badge = document.createElement("span");
+  badge.className = "status " + status;
+  badge.textContent = labels[status];
+
+  top.append(restaurant,badge);
+
+  const title = document.createElement("div");
+  title.className = "reward-title";
+  title.textContent = item.title;
+
+  const details = document.createElement("div");
+  details.className = "details";
+
+  details.append(
+    createDetail("Points",item.points),
+    createDetail("Expiration",formatDate(item.expiration)),
+    createDetail("Source","Fictional Demo Email")
+  );
+
+  const note = document.createElement("div");
+  note.className = "card-note";
+  note.textContent = item.note;
+
+  card.append(top,title,details,note);
+
+  return card;
+}
+
+function render() {
+  const term = search.value.trim().toLowerCase();
+  const restaurant = restaurantFilter.value;
+  const status = statusFilter.value;
+  const sort = sortFilter.value;
+
+  let filtered = rewards.filter(item => {
+    const searchable =
+      `${item.restaurant} ${item.title} ${item.points}`
+      .toLowerCase();
+
+    return (
+      searchable.includes(term) &&
+      (restaurant === "all" ||
+        item.restaurant === restaurant) &&
+      (status === "all" ||
+        getStatus(item) === status)
+    );
+  });
+
+  filtered.sort((a,b) => {
+    if (sort === "restaurant") {
+      return a.restaurant.localeCompare(b.restaurant);
+    }
+
+    // Unknown dates go last in either date sort.
+    if (!a.expiration && !b.expiration) {
+      return a.restaurant.localeCompare(b.restaurant);
+    }
+
+    if (!a.expiration) return 1;
+    if (!b.expiration) return -1;
+
+    if (sort === "latest") {
+      return b.expiration.localeCompare(a.expiration);
+    }
+
+    return a.expiration.localeCompare(b.expiration);
+  });
+
+  cards.replaceChildren();
+
+  document.getElementById("count").textContent =
+    `${filtered.length} of ${rewards.length} shown`;
+
+  if (!filtered.length) {
+    const empty = document.createElement("div");
+    empty.className = "empty";
+
+    const heading = document.createElement("h3");
+    heading.textContent = "No matching rewards";
+
+    const description = document.createElement("p");
+    description.textContent =
+      "Try adjusting your search or filters.";
+
+    empty.append(heading,description);
+    cards.appendChild(empty);
+    return;
+  }
+
+  filtered.forEach(item => {
+    cards.appendChild(createCard(item));
+  });
+}
+
+[search,restaurantFilter,statusFilter,sortFilter]
+  .forEach(control => {
+    control.addEventListener("input",render);
+  });
+
+document.getElementById("reset").addEventListener(
+  "click",
+  () => {
+    search.value = "";
+    restaurantFilter.value = "all";
+    statusFilter.value = "all";
+    sortFilter.value = "soonest";
+    render();
+  }
+);
+
+populateRestaurants();
+updateStats();
+render();
+</script>
+
+</body>
+</html>
