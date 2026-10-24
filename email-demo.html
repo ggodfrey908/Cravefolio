@@ -447,6 +447,73 @@ footer p {
   color: var(--green);
 }
 
+/* Email Demo V3 — Review and Edit */
+
+.review-panel {
+  margin-top:22px;
+  padding:20px;
+  background:var(--sage);
+  border-radius:13px;
+}
+
+.review-panel h3 {
+  font-family:Georgia,serif;
+  font-size:21px;
+  margin:0 0 9px;
+}
+
+.review-panel > p {
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.6;
+}
+
+.review-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  margin-top:18px;
+}
+
+.review-field {
+  min-width:0;
+}
+
+.review-field label {
+  display:block;
+  font-size:11px;
+  font-weight:800;
+  margin-bottom:7px;
+}
+
+.review-field input {
+  display:block;
+  width:100%;
+  min-width:0;
+  height:43px;
+  border:1px solid #cbdac8;
+  border-radius:9px;
+  background:white;
+  color:#173c2d;
+  padding:0 11px;
+  font:13px Arial,Helvetica,sans-serif;
+}
+
+.review-field input:focus {
+  outline:2px solid #b8d4b8;
+  border-color:var(--green);
+}
+
+.review-disclaimer {
+  margin-bottom:0;
+}
+
+@media(max-width:480px) {
+  .review-grid {
+    grid-template-columns:1fr;
+  }
+}
+
 </style>
 </head>
 
@@ -587,6 +654,47 @@ footer p {
             —
           </div>
         </div>
+
+<section class="review-panel" aria-labelledby="reviewTitle">
+  <h3 id="reviewTitle">Review Before Saving</h3>
+
+  <p>
+    Check the extracted information and correct anything
+    that looks inaccurate. Leave unknown details blank.
+  </p>
+
+  <div class="review-grid">
+
+    <div class="review-field">
+      <label for="editRestaurant">Restaurant</label>
+      <input id="editRestaurant" type="text"
+        maxlength="100" placeholder="Restaurant name">
+    </div>
+
+    <div class="review-field">
+      <label for="editReward">Reward or Offer</label>
+      <input id="editReward" type="text"
+        maxlength="180" placeholder="Reward description">
+    </div>
+
+    <div class="review-field">
+      <label for="editPoints">Points (optional)</label>
+      <input id="editPoints" type="text"
+        maxlength="80" placeholder="e.g. 500 points">
+    </div>
+
+    <div class="review-field">
+      <label for="editExpiration">Expiration (optional)</label>
+      <input id="editExpiration" type="date">
+    </div>
+
+  </div>
+
+  <p class="review-disclaimer">
+    Your corrections are user-provided information,
+    not verified restaurant account data.
+  </p>
+</section>
 
         <div class="actions" style="margin-top:18px;">
           <button
@@ -1271,44 +1379,262 @@ document.getElementById("clear").addEventListener(
 
 /* Transfer extracted results to the demo inbox */
 
-document.getElementById("addToInbox").addEventListener(
+/* ----------------------------------
+   EMAIL DEMO V3 — REVIEW AND SAVE
+---------------------------------- */
+
+const reviewFields = {
+  restaurant:document.getElementById("editRestaurant"),
+  reward:document.getElementById("editReward"),
+  points:document.getElementById("editPoints"),
+  expiration:document.getElementById("editExpiration")
+};
+
+const addToInboxButton =
+  document.getElementById("addToInbox");
+
+let reviewedAnalysis = null;
+
+/*
+  Convert a recognized US long-form date into
+  an ISO calendar date for the date input.
+*/
+
+function reviewDateToISO(value) {
+  const match = value.match(
+    /^(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{1,2}),?\s+(\d{4})$/i
+  );
+
+  if (!match) return "";
+
+  const months = [
+    "january","february","march","april",
+    "may","june","july","august",
+    "september","october","november","december"
+  ];
+
+  const month = months.indexOf(match[1].toLowerCase()) + 1;
+  const day = Number(match[2]);
+  const year = Number(match[3]);
+
+  const date = new Date(Date.UTC(year,month-1,day));
+
+  if (
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth()+1 !== month ||
+    date.getUTCDate() !== day
+  ) return "";
+
+  return [
+    String(year).padStart(4,"0"),
+    String(month).padStart(2,"0"),
+    String(day).padStart(2,"0")
+  ].join("-");
+}
+
+/*
+  Populate the editable fields whenever
+  an email is analyzed.
+*/
+
+function populateReviewFields() {
+  const text = emailText.value.trim();
+
+  if (!text) {
+    reviewedAnalysis = null;
+    addToInboxButton.disabled = true;
+    return;
+  }
+
+  const restaurant = findRestaurant(text);
+  const reward = findReward(text);
+  const points = findPoints(text);
+  const expiration = findExpiration(text);
+
+  reviewedAnalysis = {
+    restaurant,
+    reward,
+    points,
+    expiration
+  };
+
+  reviewFields.restaurant.value =
+    restaurant.status === "detected"
+      ? restaurant.value
+      : "";
+
+  reviewFields.reward.value =
+    reward.status === "detected"
+      ? reward.value
+      : "";
+
+  reviewFields.points.value =
+    points.status === "detected"
+      ? points.value
+      : "";
+
+  reviewFields.expiration.value =
+    expiration.status === "detected"
+      ? reviewDateToISO(expiration.value)
+      : "";
+
+  addToInboxButton.disabled = false;
+}
+
+/*
+  Existing Analyze Email handler runs first.
+  This listener then prepares the review fields.
+*/
+
+document.getElementById("analyze").addEventListener(
+  "click",
+  populateReviewFields
+);
+
+/*
+  Clear any previous analysis when the visitor
+  changes the email or chooses another sample.
+*/
+
+emailText.addEventListener("input", () => {
+  reviewedAnalysis = null;
+  addToInboxButton.disabled = true;
+  result.style.display = "none";
+  placeholder.style.display = "flex";
+});
+
+document.querySelectorAll("[data-sample]").forEach(button => {
+  button.addEventListener("click", () => {
+    reviewedAnalysis = null;
+    addToInboxButton.disabled = true;
+  });
+});
+
+document.getElementById("clear").addEventListener(
   "click",
   () => {
-    const text = emailText.value.trim();
+    reviewedAnalysis = null;
+    addToInboxButton.disabled = true;
 
-    if (!text) return;
-
-    const restaurant = findRestaurant(text);
-    const reward = findReward(text);
-    const expiration = findExpiration(text);
-    const points = findPoints(text);
-
-    const transfer = {
-      restaurant: restaurant.value,
-      restaurantStatus: restaurant.status,
-      reward: reward.value,
-      rewardStatus: reward.status,
-      expiration: expiration.value,
-      expirationStatus: expiration.status,
-      points: points.value,
-      pointsStatus: points.status
-    };
-
-    try {
-      sessionStorage.setItem(
-        "cravefolioDemoTransfer",
-        JSON.stringify(transfer)
-      );
-
-      window.location.href = "/inbox.html";
-    } catch (error) {
-      alert(
-        "Your browser could not transfer this result. " +
-        "Please check your browser's storage settings."
-      );
-    }
+    Object.values(reviewFields).forEach(field => {
+      field.value = "";
+    });
   }
 );
+
+/*
+  Transfer the reviewed information.
+
+  Only extracted/edited fields are transferred.
+  Original email text is never transferred.
+*/
+
+addToInboxButton.addEventListener("click", () => {
+  if (!reviewedAnalysis) {
+    alert("Please analyze an email first.");
+    return;
+  }
+
+  const restaurant =
+    reviewFields.restaurant.value.trim();
+
+  const reward =
+    reviewFields.reward.value.trim();
+
+  const points =
+    reviewFields.points.value.trim();
+
+  const expiration =
+    reviewFields.expiration.value;
+
+  if (!restaurant || !reward) {
+    alert(
+      "Please provide a restaurant and reward description " +
+      "before saving. If either is unknown, review the email first."
+    );
+    return;
+  }
+
+  if (
+    expiration &&
+    (
+      !reviewFields.expiration.validity.valid ||
+      !/^\d{4}-\d{2}-\d{2}$/.test(expiration)
+    )
+  ) {
+    alert("Please enter a valid expiration date.");
+    return;
+  }
+
+  const original = reviewedAnalysis;
+
+  const getStatus = (value,originalField) => {
+    if (!value) return "missing";
+
+    if (
+      originalField.status === "detected" &&
+      value === originalField.value
+    ) {
+      return "detected";
+    }
+
+    return "review";
+  };
+
+  const originalExpiration =
+    original.expiration.status === "detected"
+      ? reviewDateToISO(original.expiration.value)
+      : "";
+
+  const transfer = {
+    restaurant,
+    restaurantStatus:getStatus(
+      restaurant,original.restaurant
+    ),
+
+    reward,
+    rewardStatus:getStatus(
+      reward,original.reward
+    ),
+
+    points:points || "Not provided",
+    pointsStatus:points
+      ? getStatus(points,original.points)
+      : "missing",
+
+    expiration:expiration || "Not provided",
+    expirationStatus:expiration
+      ? (
+          expiration === originalExpiration
+            ? "detected"
+            : "review"
+        )
+      : "missing",
+
+    userReviewed:true
+  };
+
+  /*
+    User corrections intentionally retain review status.
+    The inbox must not treat edited information as
+    independently verified restaurant data.
+  */
+
+  try {
+    sessionStorage.setItem(
+      "cravefolioDemoTransfer",
+      JSON.stringify(transfer)
+    );
+
+    window.location.href = "/inbox.html";
+
+  } catch (error) {
+    alert(
+      "Your browser could not transfer this result. " +
+      "Please check your browser storage settings."
+    );
+  }
+});
 
 </script>
 
