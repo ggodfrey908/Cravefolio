@@ -1,0 +1,582 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>My Rewards Dashboard | Cravefolio</title>
+
+<meta name="description" content="Explore Cravefolio's upcoming restaurant rewards dashboard, designed to bring your loyalty rewards together in one convenient place.">
+
+<link rel="icon" type="image/x-icon" sizes="any" href="/favicon.ico?v=2">
+
+<style>
+:root {
+  --green:#07543d;
+  --cream:#faf8ef;
+  --yellow:#ffc642;
+  --sage:#e8efdf;
+  --muted:#60776a;
+  --border:#e0e7d9;
+}
+
+* { box-sizing:border-box; }
+
+body {
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:var(--cream);
+  color:var(--green);
+}
+
+a { color:inherit; }
+
+header {
+  background:#fffdf7;
+  border-bottom:1px solid var(--border);
+}
+
+.nav {
+  max-width:1150px;
+  margin:auto;
+  padding:19px 24px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:20px;
+}
+
+.logo {
+  font-size:25px;
+  font-weight:800;
+  letter-spacing:-1px;
+  text-decoration:none;
+}
+
+.logo span { color:#d99d00; }
+
+nav {
+  display:flex;
+  flex-wrap:wrap;
+  gap:22px;
+}
+
+nav a {
+  text-decoration:none;
+  font-size:14px;
+  font-weight:700;
+}
+
+nav a:hover,
+nav a.active { color:#a57900; }
+
+.hero {
+  background:var(--green);
+  color:white;
+  padding:55px 24px;
+}
+
+.hero-inner {
+  max-width:1150px;
+  margin:auto;
+}
+
+.eyebrow {
+  color:var(--yellow);
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:2px;
+}
+
+.hero h1 {
+  font-family:Georgia,serif;
+  font-size:clamp(34px,5vw,52px);
+  margin:13px 0;
+}
+
+.hero p {
+  max-width:630px;
+  color:#dcebdd;
+  line-height:1.7;
+  font-size:15px;
+}
+
+main {
+  max-width:1150px;
+  margin:auto;
+  padding:36px 24px 75px;
+}
+
+.notice {
+  background:#fff0c4;
+  border:1px solid #f0d68b;
+  border-radius:13px;
+  padding:17px 20px;
+  font-size:13px;
+  line-height:1.7;
+  margin-bottom:28px;
+}
+
+.overview {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+  margin-bottom:42px;
+}
+
+.stat {
+  background:white;
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:24px;
+}
+
+.stat-icon {
+  font-size:25px;
+  margin-bottom:15px;
+}
+
+.stat-label {
+  color:var(--muted);
+  font-size:13px;
+}
+
+.stat-value {
+  font-family:Georgia,serif;
+  font-size:30px;
+  font-weight:700;
+  margin-top:9px;
+}
+
+.stat-detail {
+  color:var(--muted);
+  font-size:12px;
+  margin-top:9px;
+}
+
+.section-heading {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin-bottom:19px;
+}
+
+.section-heading h2 {
+  font-family:Georgia,serif;
+  font-size:28px;
+  margin:0;
+}
+
+.section-heading a {
+  font-size:13px;
+  font-weight:700;
+  text-decoration:none;
+}
+
+.section-heading a:hover {
+  text-decoration:underline;
+}
+
+.connections {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+  margin-bottom:44px;
+}
+
+.restaurant {
+  background:white;
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:23px;
+}
+
+.restaurant-top {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+}
+
+.restaurant-icon {
+  width:52px;
+  height:52px;
+  background:var(--sage);
+  border-radius:13px;
+  display:grid;
+  place-items:center;
+  font-size:27px;
+}
+
+.status {
+  background:#fff0c4;
+  color:#806222;
+  font-size:10px;
+  font-weight:800;
+  padding:8px 10px;
+  border-radius:20px;
+}
+
+.restaurant h3 {
+  font-family:Georgia,serif;
+  font-size:22px;
+  margin:19px 0 8px;
+}
+
+.restaurant p {
+  font-size:13px;
+  color:var(--muted);
+  line-height:1.6;
+  min-height:42px;
+}
+
+.restaurant a {
+  display:inline-block;
+  margin-top:12px;
+  color:var(--green);
+  font-size:12px;
+  font-weight:800;
+  text-underline-offset:3px;
+}
+
+.empty-panel {
+  background:white;
+  border:1px dashed #b6cdb8;
+  border-radius:17px;
+  text-align:center;
+  padding:45px 24px;
+  margin-bottom:42px;
+}
+
+.empty-icon {
+  width:65px;
+  height:65px;
+  margin:0 auto 16px;
+  border-radius:50%;
+  background:var(--sage);
+  display:grid;
+  place-items:center;
+  font-size:30px;
+}
+
+.empty-panel h3 {
+  font-family:Georgia,serif;
+  font-size:23px;
+  margin:0 0 10px;
+}
+
+.empty-panel p {
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.7;
+  max-width:490px;
+  margin:0 auto;
+}
+
+.cta {
+  display:inline-block;
+  background:var(--yellow);
+  color:#173c2d;
+  padding:13px 19px;
+  border-radius:10px;
+  text-decoration:none;
+  font-size:13px;
+  font-weight:800;
+  margin-top:20px;
+}
+
+.cta:hover { background:#f2b923; }
+
+.how-it-works {
+  background:var(--sage);
+  border-radius:18px;
+  padding:30px;
+}
+
+.how-it-works h2 {
+  font-family:Georgia,serif;
+  margin:0 0 22px;
+  font-size:27px;
+}
+
+.steps {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
+}
+
+.step-number {
+  width:33px;
+  height:33px;
+  background:var(--green);
+  color:white;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  font-size:13px;
+  font-weight:800;
+}
+
+.step h3 {
+  font-size:15px;
+  margin:14px 0 8px;
+}
+
+.step p {
+  font-size:13px;
+  color:var(--muted);
+  line-height:1.6;
+  margin:0;
+}
+
+footer {
+  background:var(--green);
+  color:white;
+  text-align:center;
+  padding:30px 20px;
+  font-size:12px;
+}
+
+footer a {
+  margin:0 9px;
+  text-decoration:none;
+}
+
+footer p {
+  color:#c9dfd0;
+  margin-top:18px;
+}
+
+@media(max-width:800px) {
+  .connections { grid-template-columns:repeat(2,1fr); }
+}
+
+@media(max-width:600px) {
+  .nav { flex-direction:column; }
+
+  .overview,
+  .connections,
+  .steps {
+    grid-template-columns:1fr;
+  }
+
+  .section-heading {
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .stat { padding:20px; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="nav">
+    <a class="logo" href="/">Crave<span>folio.</span></a>
+
+    <nav aria-label="Main navigation">
+      <a href="/">Home</a>
+      <a href="/restaurants.html">Restaurants</a>
+      <a class="active" href="/rewards.html" aria-current="page">Rewards</a>
+      <a href="/about.html">About</a>
+      <a href="/contact.html">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">YOUR REWARDS, SERVED.</div>
+
+    <h1>My Rewards Dashboard</h1>
+
+    <p>
+      One home for your favorite restaurant rewards.
+      We're building a simpler way to keep track of points,
+      discover available perks, and stay ahead of expiration dates.
+    </p>
+  </div>
+</section>
+
+<main>
+
+  <div class="notice">
+    <strong>Dashboard Preview:</strong>
+    Automatic restaurant account connections are not available yet.
+    The information below shows the planned dashboard structure,
+    not live customer data. Cravefolio does not currently retrieve
+    restaurant points, coupons, or account information.
+  </div>
+
+  <section class="overview" aria-label="Rewards overview">
+
+    <div class="stat">
+      <div class="stat-icon">🏪</div>
+      <div class="stat-label">Connected Restaurants</div>
+      <div class="stat-value">0</div>
+      <div class="stat-detail">Connections coming in a future update</div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-icon">🎁</div>
+      <div class="stat-label">Available Rewards</div>
+      <div class="stat-value">—</div>
+      <div class="stat-detail">No account data available yet</div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-icon">⏰</div>
+      <div class="stat-label">Upcoming Expirations</div>
+      <div class="stat-value">—</div>
+      <div class="stat-detail">Tracking not enabled yet</div>
+    </div>
+
+  </section>
+
+  <section aria-labelledby="restaurants-title">
+
+    <div class="section-heading">
+      <h2 id="restaurants-title">Restaurant Connections</h2>
+      <a href="/restaurants.html">Explore all restaurants →</a>
+    </div>
+
+    <div class="connections">
+
+      <article class="restaurant">
+        <div class="restaurant-top">
+          <div class="restaurant-icon" aria-hidden="true">🍔</div>
+          <span class="status">Coming Soon</span>
+        </div>
+        <h3>McDonald's</h3>
+        <p>Future support for eligible loyalty information, subject to authorized access.</p>
+        <a href="/restaurants.html">View Directory →</a>
+      </article>
+
+      <article class="restaurant">
+        <div class="restaurant-top">
+          <div class="restaurant-icon" aria-hidden="true">☕</div>
+          <span class="status">Coming Soon</span>
+        </div>
+        <h3>Starbucks</h3>
+        <p>A planned space for rewards information when supported connections become available.</p>
+        <a href="/restaurants.html">View Directory →</a>
+      </article>
+
+      <article class="restaurant">
+        <div class="restaurant-top">
+          <div class="restaurant-icon" aria-hidden="true">🌯</div>
+          <span class="status">Coming Soon</span>
+        </div>
+        <h3>Chipotle</h3>
+        <p>Designed to accommodate supported loyalty information in a future update.</p>
+        <a href="/restaurants.html">View Directory →</a>
+      </article>
+
+    </div>
+
+  </section>
+
+  <section aria-labelledby="rewards-title">
+
+    <div class="section-heading">
+      <h2 id="rewards-title">Available Rewards</h2>
+    </div>
+
+    <div class="empty-panel">
+      <div class="empty-icon" aria-hidden="true">🎁</div>
+
+      <h3>Your future rewards home</h3>
+
+      <p>
+        Once authorized restaurant connections are supported,
+        this section is intended to display eligible rewards
+        and offers automatically—without manually entering
+        your points or coupons.
+      </p>
+
+      <a class="cta" href="/restaurants.html">
+        Explore Restaurant Programs →
+      </a>
+    </div>
+
+  </section>
+
+  <section aria-labelledby="expiration-title">
+
+    <div class="section-heading">
+      <h2 id="expiration-title">Upcoming Expirations</h2>
+    </div>
+
+    <div class="empty-panel">
+      <div class="empty-icon" aria-hidden="true">🔔</div>
+
+      <h3>Expiration tracking is on our roadmap</h3>
+
+      <p>
+        We're designing a dedicated place for upcoming reward
+        expiration dates. Tracking and notifications are not
+        currently active.
+      </p>
+    </div>
+
+  </section>
+
+  <section class="how-it-works" aria-labelledby="future-title">
+
+    <h2 id="future-title">The Cravefolio Vision</h2>
+
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-number">1</div>
+        <h3>Discover restaurants</h3>
+        <p>
+          Explore restaurant loyalty programs in one
+          searchable directory. Available now.
+        </p>
+      </div>
+
+      <div class="step">
+        <div class="step-number">2</div>
+        <h3>Connect securely</h3>
+        <p>
+          Our goal is to support authorized connections
+          where restaurant programs permit them.
+          This feature is not available yet.
+        </p>
+      </div>
+
+      <div class="step">
+        <div class="step-number">3</div>
+        <h3>See rewards together</h3>
+        <p>
+          The long-term goal is one dashboard for
+          supported rewards, offers, and expiration information.
+        </p>
+      </div>
+
+    </div>
+
+  </section>
+
+</main>
+
+<footer>
+  <div>
+    <a href="/">Home</a>
+    <a href="/restaurants.html">Restaurants</a>
+    <a href="/about.html">About</a>
+    <a href="/contact.html">Contact</a>
+    <a href="/privacy.html">Privacy</a>
+    <a href="/terms.html">Terms</a>
+  </div>
+
+  <p>© 2026 Cravefolio. Your rewards, served.</p>
+</footer>
+
+</body>
+</html>
