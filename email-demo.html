@@ -655,16 +655,19 @@ footer p {
 "use strict";
 
 /*
-  Fictional examples only.
-  These are not actual restaurant-issued offers.
+  CRAVEFOLIO EMAIL DEMO V2
+
+  Browser-only demonstration.
+  No network requests, email uploads, or storage.
+
+  All built-in examples are fictional.
+  Results are text interpretations, not verified offers.
 */
 
 const samples = {
-  mcdonalds:
-`From: McDonald's Rewards
+  mcdonalds: `
+From: McDonald's Rewards
 Subject: Your fictional reward is ready!
-
-Thanks for being a rewards member.
 
 You have earned 1,500 points.
 
@@ -672,41 +675,86 @@ Your reward: Free medium fries.
 
 Offer expires: November 15, 2026.
 
-This is a fictional demonstration email.`,
+This is a fictional demonstration email.
+`,
 
-  starbucks:
-`From: Starbucks Rewards
-Subject: A fictional reward just for you
+  starbucks: `
+From: Starbucks Rewards
+Subject: A little treat for you!
 
-Your current example balance is 250 Stars.
+You currently have 250 Stars.
 
-Your reward: Free bakery item.
+Enjoy a free bakery item with your next eligible visit.
 
 Valid until December 10, 2026.
 
-This is a fictional demonstration email.`,
+This is a fictional demonstration email.
+`,
 
-  chipotle:
-`From: Chipotle Rewards
+  chipotle: `
+From: Chipotle Rewards
 Subject: Your example reward
 
-You currently have 800 points.
+Your points balance: 800 points.
 
 Your reward: Free guacamole.
 
-Expires on November 30, 2026.
+Expires on 11/30/2026.
 
-This is a fictional demonstration email.`,
+This is a fictional demonstration email.
+`,
 
-  panera:
-`From: MyPanera
-Subject: A little something for you
+  panera: `
+From: MyPanera
+Subject: Something delicious awaits!
 
-Your reward: Free pastry.
+You've unlocked a free pastry.
 
 Redeem by December 5, 2026.
 
-This is a fictional demonstration email.`
+This is a fictional demonstration email.
+`,
+
+  tacobell: `
+From: Taco Bell Rewards
+Subject: Your fictional member offer
+
+Your offer: Free crunchy taco.
+
+This is a fictional demonstration email.
+`,
+
+  dunkin: `
+From: Dunkin' Rewards
+Subject: Your points update
+
+You have 650 points available.
+
+This is a fictional demonstration email.
+No specific reward or expiration date is provided.
+`,
+
+  wendys: `
+From: Wendy's Rewards
+Subject: Your fictional weekend treat
+
+Get a free small Frosty with an eligible purchase.
+
+Offer ends 2026-12-20.
+
+This is a fictional demonstration email.
+`,
+
+  ambiguous: `
+From: Burger King
+Subject: Your next treat awaits
+
+Enjoy a free item during your next visit.
+
+Hurry! This offer ends Friday.
+
+This is a fictional demonstration email.
+`
 };
 
 const restaurantNames = [
@@ -726,83 +774,382 @@ const emailText = document.getElementById("emailText");
 const placeholder = document.getElementById("placeholder");
 const result = document.getElementById("result");
 
+const restaurantResult =
+  document.getElementById("restaurantResult");
+
+const rewardResult =
+  document.getElementById("rewardResult");
+
+const expirationResult =
+  document.getElementById("expirationResult");
+
+const pointsResult =
+  document.getElementById("pointsResult");
+
+const extractionStatus =
+  document.getElementById("extractionStatus");
+
+
+/* ----------------------------------
+   RESTAURANT RECOGNITION
+---------------------------------- */
+
 function findRestaurant(text) {
-  for (const [name, pattern] of restaurantNames) {
-    if (pattern.test(text)) {
-      return name;
-    }
+  const matches = restaurantNames.filter(
+    ([name, pattern]) => pattern.test(text)
+  );
+
+  if (matches.length === 1) {
+    return {
+      value: matches[0][0],
+      status: "detected"
+    };
   }
 
-  return "Not identified";
+  if (matches.length > 1) {
+    return {
+      value: "Multiple restaurants mentioned",
+      status: "review"
+    };
+  }
+
+  return {
+    value: "Not identified",
+    status: "missing"
+  };
 }
 
-function findReward(text) {
-  const lines = text.split(/\r?\n/);
 
-  const patterns = [
-    /(?:your reward|your offer|reward|offer)\s*:\s*(.+)/i,
-    /(?:you(?:'ve| have)? earned)\s+(?:a\s+)?(free\s+.+)/i
+/* ----------------------------------
+   REWARD RECOGNITION
+---------------------------------- */
+
+function findReward(text) {
+  const lines = text
+    .split(/\r?\n/)
+    .map(line => line.trim())
+    .filter(Boolean);
+
+  const explicitPatterns = [
+    /^(?:your\s+)?(?:reward|offer)\s*:\s*(.+)$/i,
+
+    /^(?:you(?:'ve| have)\s+unlocked)\s+(.+)$/i,
+
+    /^(?:enjoy|get|claim|receive)\s+(a\s+|an\s+)?(free\s+.+)$/i,
+
+    /^(?:you(?:'ve| have)\s+earned)\s+(a\s+|an\s+)?(free\s+.+)$/i
   ];
 
   for (const line of lines) {
-    for (const pattern of patterns) {
+    for (const pattern of explicitPatterns) {
       const match = line.match(pattern);
 
       if (match) {
-        return match[1].trim().slice(0, 160);
+        const value = match[match.length - 1]
+          .replace(/[.!]+$/, "")
+          .trim();
+
+        if (value.length >= 4) {
+          return {
+            value: value.slice(0, 180),
+            status: "detected"
+          };
+        }
       }
     }
   }
 
-  return "No supported reward description detected";
+  /*
+    Recognize vague reward language without
+    pretending to know the actual reward.
+  */
+
+  const vaguePatterns = [
+    /\bfree item\b/i,
+    /\bspecial (?:reward|offer)\b/i,
+    /\bexclusive (?:reward|offer)\b/i,
+    /\bsurprise reward\b/i,
+    /\breward (?:is|awaits)\b/i
+  ];
+
+  if (vaguePatterns.some(pattern => pattern.test(text))) {
+    return {
+      value: "Possible reward mentioned; details unclear",
+      status: "review"
+    };
+  }
+
+  return {
+    value: "No supported reward detected",
+    status: "missing"
+  };
 }
+
+
+/* ----------------------------------
+   EXPIRATION RECOGNITION
+---------------------------------- */
 
 function findExpiration(text) {
   const month =
-    "(?:January|February|March|April|May|June|July|" +
-    "August|September|October|November|December)";
+    "(?:January|February|March|April|May|June|" +
+    "July|August|September|October|November|December)";
+
+  const datePart =
+    "(" +
+      month + "\\s+\\d{1,2},?\\s+\\d{4}" +
+      "|" +
+      "\\d{1,2}/\\d{1,2}/\\d{4}" +
+      "|" +
+      "\\d{4}-\\d{2}-\\d{2}" +
+    ")";
+
+  const expirationPrefix =
+    "(?:expires?\\s*(?:on|:)?|" +
+    "valid until\\s*:?|" +
+    "redeem by\\s*:?|" +
+    "offer ends\\s*:?|" +
+    "use by\\s*:?|" +
+    "valid through\\s*:?)";
+
+  const pattern = new RegExp(
+    expirationPrefix + "\\s*" + datePart,
+    "ig"
+  );
+
+  const matches = [...text.matchAll(pattern)];
+
+  if (matches.length > 0) {
+    const parsedDates = [];
+
+    for (const match of matches) {
+      const original = match[1].trim();
+
+      let year;
+      let monthNumber;
+      let day;
+
+      const iso = original.match(
+        /^(\d{4})-(\d{2})-(\d{2})$/
+      );
+
+      const numeric = original.match(
+        /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/
+      );
+
+      if (iso) {
+        year = Number(iso[1]);
+        monthNumber = Number(iso[2]);
+        day = Number(iso[3]);
+      } else if (numeric) {
+        // Numeric dates use US month/day/year format.
+        monthNumber = Number(numeric[1]);
+        day = Number(numeric[2]);
+        year = Number(numeric[3]);
+      } else {
+        const date = new Date(original);
+
+        if (!Number.isNaN(date.getTime())) {
+          year = date.getFullYear();
+          monthNumber = date.getMonth() + 1;
+          day = date.getDate();
+        }
+      }
+
+      if (!year || !monthNumber || !day) {
+        continue;
+      }
+
+      const date = new Date(
+        Date.UTC(year, monthNumber - 1, day)
+      );
+
+      /*
+        Check that JavaScript hasn't silently
+        converted an impossible date.
+      */
+
+      const valid =
+        date.getUTCFullYear() === year &&
+        date.getUTCMonth() + 1 === monthNumber &&
+        date.getUTCDate() === day;
+
+      if (!valid) {
+        continue;
+      }
+
+      parsedDates.push(date.toISOString().slice(0, 10));
+    }
+
+    const uniqueDates = [...new Set(parsedDates)];
+
+    if (uniqueDates.length === 1) {
+      const date = new Date(
+        uniqueDates[0] + "T12:00:00Z"
+      );
+
+      return {
+        value: date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          timeZone: "UTC"
+        }),
+        status: "detected"
+      };
+    }
+
+    if (uniqueDates.length > 1) {
+      return {
+        value: "Multiple expiration dates found",
+        status: "review"
+      };
+    }
+
+    return {
+      value: "Date mentioned, but could not be validated",
+      status: "review"
+    };
+  }
+
+  /*
+    Relative dates need context.
+    Never invent a calendar date.
+  */
+
+  const relativePattern =
+    /\b(?:expires?|offer ends|valid until|redeem by)\s+(?:this\s+)?(?:today|tomorrow|tonight|monday|tuesday|wednesday|thursday|friday|saturday|sunday|weekend|next week)\b/i;
+
+  if (relativePattern.test(text)) {
+    return {
+      value: "Relative expiration mentioned; date needs review",
+      status: "review"
+    };
+  }
+
+  return {
+    value: "No supported expiration date detected",
+    status: "missing"
+  };
+}
+
+
+/* ----------------------------------
+   POINTS RECOGNITION
+---------------------------------- */
+
+function findPoints(text) {
+  /*
+    Look for a stated balance first.
+    Avoid treating every number as points.
+  */
 
   const patterns = [
-    new RegExp(
-      "(?:expires?\\s*(?:on|:)?|valid until\\s*:?|redeem by\\s*:?)\\s*" +
-      "(" + month + "\\s+\\d{1,2},?\\s+\\d{4})",
-      "i"
-    ),
+    /(?:points balance|current balance|available balance)\s*:\s*(\d[\d,]*)\s*(points|stars|crowns)?/i,
 
-    /(?:expires?|valid until|redeem by)\s*(?:on|:)?\s*(\d{1,2}\/\d{1,2}\/\d{4})/i
+    /(?:you have|you currently have|you've earned|you have earned)\s+(\d[\d,]*)\s+(points|stars|crowns)\b/i,
+
+    /\b(\d[\d,]*)\s+(points|stars|crowns)\s+(?:available|in your account)\b/i
   ];
 
   for (const pattern of patterns) {
     const match = text.match(pattern);
 
     if (match) {
-      const date = new Date(match[1]);
+      const number = Number(
+        match[1].replace(/,/g, "")
+      );
 
-      if (!Number.isNaN(date.getTime())) {
-        return date.toLocaleDateString("en-US", {
-          year:"numeric",
-          month:"long",
-          day:"numeric",
-          timeZone:"UTC"
-        });
+      if (Number.isFinite(number)) {
+        const unit = match[2] || "points";
+
+        return {
+          value: number.toLocaleString("en-US") + " " + unit,
+          status: "detected"
+        };
       }
     }
   }
 
-  return "No supported expiration date detected";
-}
+  /*
+    A points reference without a clear balance
+    should not be presented as an account balance.
+  */
 
-function findPoints(text) {
-  const match = text.match(
-    /(\d{1,3}(?:,\d{3})*|\d+)\s*(?:reward\s+)?(?:points|stars|crowns)\b/i
-  );
-
-  if (match) {
-    return match[0];
+  if (/\b\d[\d,]*\s+(?:points|stars|crowns)\b/i.test(text)) {
+    return {
+      value: "Points mentioned; balance needs review",
+      status: "review"
+    };
   }
 
-  return "No points detected";
+  return {
+    value: "No supported points balance detected",
+    status: "missing"
+  };
 }
+
+
+/* ----------------------------------
+   EXTRACTION STATUS
+---------------------------------- */
+
+function makeStatusRow(label, status) {
+  const row = document.createElement("div");
+  row.className = "check-row";
+
+  const name = document.createElement("span");
+  name.className = "check-label";
+  name.textContent = label;
+
+  const badge = document.createElement("span");
+  badge.className = "check-badge " + status;
+
+  const labels = {
+    detected: "Detected",
+    review: "Needs Review",
+    missing: "Not Found"
+  };
+
+  badge.textContent = labels[status];
+
+  row.append(name, badge);
+
+  return row;
+}
+
+function renderStatuses(fields) {
+  extractionStatus.replaceChildren();
+
+  let detected = 0;
+  let review = 0;
+  let missing = 0;
+
+  for (const [label, field] of fields) {
+    extractionStatus.appendChild(
+      makeStatusRow(label, field.status)
+    );
+
+    if (field.status === "detected") detected++;
+    if (field.status === "review") review++;
+    if (field.status === "missing") missing++;
+  }
+
+  const summary = document.createElement("div");
+  summary.className = "v2-summary";
+
+  summary.textContent =
+    detected + " detected · " +
+    review + " need review · " +
+    missing + " not found";
+
+  extractionStatus.appendChild(summary);
+}
+
+
+/* ----------------------------------
+   ANALYZE EMAIL
+---------------------------------- */
 
 function analyzeEmail() {
   const text = emailText.value.trim();
@@ -818,18 +1165,36 @@ function analyzeEmail() {
   const expiration = findExpiration(text);
   const points = findPoints(text);
 
-  document.getElementById("restaurantResult").textContent = restaurant;
-  document.getElementById("rewardResult").textContent = reward;
-  document.getElementById("expirationResult").textContent = expiration;
-  document.getElementById("pointsResult").textContent = points;
+  restaurantResult.textContent = restaurant.value;
+  rewardResult.textContent = reward.value;
+  expirationResult.textContent = expiration.value;
+  pointsResult.textContent = points.value;
+
+  renderStatuses([
+    ["Restaurant", restaurant],
+    ["Reward", reward],
+    ["Expiration", expiration],
+    ["Points", points]
+  ]);
 
   placeholder.style.display = "none";
   result.style.display = "block";
 }
 
-document.querySelectorAll("[data-sample]").forEach(button => {
+
+/* ----------------------------------
+   SAMPLE BUTTONS
+---------------------------------- */
+
+const sampleButtons = document.querySelectorAll(
+  "[data-sample]"
+);
+
+sampleButtons.forEach(button => {
   button.addEventListener("click", () => {
     const sampleName = button.dataset.sample;
+
+    if (!samples[sampleName]) return;
 
     emailText.value = samples[sampleName];
 
@@ -838,17 +1203,58 @@ document.querySelectorAll("[data-sample]").forEach(button => {
   });
 });
 
+
+/* ----------------------------------
+   ADD MORE FICTIONAL EXAMPLES
+---------------------------------- */
+
+const sampleContainer = document.querySelector(".samples");
+
+const extraSamples = [
+  ["tacobell", "🌮 Taco Bell"],
+  ["dunkin", "🍩 Dunkin'"],
+  ["wendys", "🍟 Wendy's"],
+  ["ambiguous", "🧪 Unclear Offer"]
+];
+
+extraSamples.forEach(([key, label]) => {
+  const button = document.createElement("button");
+
+  button.type = "button";
+  button.className = "sample";
+  button.textContent = label;
+
+  button.addEventListener("click", () => {
+    emailText.value = samples[key];
+
+    placeholder.style.display = "flex";
+    result.style.display = "none";
+  });
+
+  sampleContainer.appendChild(button);
+});
+
+
+/* ----------------------------------
+   CONTROLS
+---------------------------------- */
+
 document.getElementById("analyze").addEventListener(
   "click",
   analyzeEmail
 );
 
-document.getElementById("clear").addEventListener("click", () => {
-  emailText.value = "";
-  result.style.display = "none";
-  placeholder.style.display = "flex";
-  emailText.focus();
-});
+document.getElementById("clear").addEventListener(
+  "click",
+  () => {
+    emailText.value = "";
+
+    result.style.display = "none";
+    placeholder.style.display = "flex";
+
+    emailText.focus();
+  }
+);
 </script>
 
 </body>
