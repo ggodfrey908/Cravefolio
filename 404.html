@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Page Not Found | Cravefolio</title>
+  <style>
+    :root{--green:#07543d;--cream:#fffaf0;--yellow:#ffc642;--muted:#527261}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;display:flex;flex-direction:column;background:var(--cream);color:var(--green);font-family:Arial,Helvetica,sans-serif;line-height:1.6}
+    header{background:#fffdf7;border-bottom:1px solid #e7e8d9;padding:22px 8%}
+    .brand{color:var(--green);font:bold 30px Georgia,serif;text-decoration:none}
+    .tagline{display:block;font-size:11px;color:#76967a}
+    main{flex:1;display:grid;place-items:center;padding:50px 22px;text-align:center}
+    .card{max-width:650px;width:100%;padding:45px 30px;background:#fffdf7;border:1px solid #e7e8d9;border-radius:22px;box-shadow:0 8px 25px #173e3010}
+    .number{font:bold 90px Georgia,serif;line-height:1;color:var(--green);margin:0}
+    .gift{font-size:43px;margin:12px 0}
+    h1{font:bold 38px Georgia,serif;margin:12px 0}
+    p{color:var(--muted);margin:12px auto 25px;max-width:450px}
+    .button{display:inline-block;background:var(--yellow);color:#153e2c;text-decoration:none;font-weight:bold;padding:13px 26px;border-radius:30px}
+    .button:focus-visible,a:focus-visible{outline:3px solid var(--green);outline-offset:4px}
+    footer{text-align:center;padding:26px;color:var(--muted);font-size:13px}
+    footer a{color:var(--green);margin:0 7px}
+    @media(max-width:600px){.card{padding:35px 20px}.number{font-size:72px}h1{font-size:30px}}
+  </style>
+</head>
+<body>
+  <header><a href="/" class="brand">cravefolio</a><span class="tagline">Your rewards, served.</span></header>
+  <main>
+    <section class="card" aria-labelledby="missing-title">
+      <div class="number" aria-label="Error 404">404</div>
+      <div class="gift" aria-hidden="true">🎁</div>
+      <h1 id="missing-title">This page isn't on the menu.</h1>
+      <p>Looks like this link doesn't lead anywhere. Let's get you back to Cravefolio.</p>
+      <a class="button" href="/">Return Home →</a>
+    </section>
+  </main>
+  <footer><div>Good Food. Great Rewards.</div><a href="/about.html">About</a><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><div>© 2026 Cravefolio</div></footer>
+</body>
+</html>
