@@ -727,6 +727,9 @@ function receiveDemoTransfer() {
       ? "Transferred from the browser demo. Some extracted details require verification."
       : "Transferred from the browser demo. This is an unverified text interpretation."
   });
+  if (!saveRewards()) {
+  rewards.shift();
+  }
 }
 
 
@@ -1006,6 +1009,22 @@ function createCard(item) {
   note.textContent = item.note;
 
   card.append(top,title,details,note);
+  
+  if (isSavedReward(item)) {
+    const removeButton = document.createElement("button");
+  
+    removeButton.type = "button";
+    removeButton.className = "remove-reward";
+    removeButton.textContent = "Remove Saved Reward";
+  
+    removeButton.addEventListener("click", () => {
+      if (confirm("Remove this saved reward?")) {
+        removeSavedReward(item.id);
+      }
+    });
+  
+    card.appendChild(removeButton);
+  }
 
   return card;
 }
