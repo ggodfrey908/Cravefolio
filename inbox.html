@@ -390,6 +390,31 @@ footer p {
 @media(max-width:370px) {
   .stats { grid-template-columns:1fr; }
 }
+
+/* Rewards Inbox V2 */
+
+.remove-reward {
+  width:100%;
+  padding:11px;
+  border:1px solid #e4c9c3;
+  border-radius:9px;
+  background:#fff6f4;
+  color:#91483e;
+  font-size:12px;
+  font-weight:800;
+  cursor:pointer;
+  margin-top:4px;
+}
+
+.remove-reward:hover {
+  background:#f9e6e2;
+}
+
+button.button {
+  cursor:pointer;
+  font-family:inherit;
+}
+
 </style>
 </head>
 
@@ -930,6 +955,14 @@ function updateStats() {
 }
 
 function populateRestaurants() {
+  const previous = restaurantFilter.value;
+
+  const defaultOption = document.createElement("option");
+  defaultOption.value = "all";
+  defaultOption.textContent = "All Restaurants";
+
+  restaurantFilter.replaceChildren(defaultOption);
+
   const names = [...new Set(
     rewards.map(item => item.restaurant)
   )].sort();
@@ -940,6 +973,11 @@ function populateRestaurants() {
     option.textContent = name;
     restaurantFilter.appendChild(option);
   });
+
+  const stillExists = names.includes(previous);
+
+  restaurantFilter.value =
+    stillExists ? previous : "all";
 }
 
 function createDetail(label,value) {
@@ -1110,6 +1148,18 @@ document.getElementById("reset").addEventListener(
     render();
   }
 );
+
+/* Clear all saved rewards */
+
+const clearButton = document.createElement("button");
+
+clearButton.type = "button";
+clearButton.className = "button secondary";
+clearButton.textContent = "Clear Saved Rewards";
+
+clearButton.addEventListener("click", clearSavedRewards);
+
+document.querySelector(".actions").appendChild(clearButton);
 
 populateRestaurants();
 updateStats();
