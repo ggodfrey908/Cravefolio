@@ -728,6 +728,130 @@ function receiveDemoTransfer() {
   });
 }
 
+
+/* ----------------------------------
+   SAVED REWARDS — INBOX V2
+---------------------------------- */
+
+const SAVED_REWARDS_KEY = "cravefolioSavedRewardsV2";
+
+function isSavedReward(item) {
+  return typeof item.id === "string" &&
+    item.id.startsWith("saved-");
+}
+
+function loadSavedRewards() {
+  try {
+    const saved = JSON.parse(
+      localStorage.getItem(SAVED_REWARDS_KEY) || "[]"
+    );
+
+    if (!Array.isArray(saved)) return;
+
+    saved.slice(0, 100).forEach(item => {
+      if (
+        !item ||
+        typeof item !== "object" ||
+        !isSavedReward(item) ||
+        typeof item.restaurant !== "string" ||
+        typeof item.title !== "string"
+      ) return;
+
+      rewards.push({
+        id:item.id,
+        restaurant:item.restaurant.slice(0,180),
+        emoji:"🎁",
+        title:item.title.slice(0,180),
+        points:typeof item.points === "string"
+          ? item.points.slice(0,180)
+          : "Not provided",
+        expiration:typeof item.expiration === "string" &&
+          /^\d{4}-\d{2}-\d{2}$/.test(item.expiration)
+          ? item.expiration
+          : null,
+        review:item.review === true,
+        source:"Saved Demo Reward",
+        note:"Saved locally in this browser. Not a verified restaurant offer."
+      });
+    });
+  } catch (error) {
+    console.warn("Saved rewards could not be loaded.");
+  }
+}
+
+function saveRewards() {
+  try {
+    const saved = rewards.filter(isSavedReward);
+
+    localStorage.setItem(
+      SAVED_REWARDS_KEY,
+      JSON.stringify(saved)
+    );
+
+    return true;
+  } catch (error) {
+    alert(
+      "Your browser could not save these rewards. " +
+      "Check your browser storage settings."
+    );
+
+    return false;
+  }
+}
+
+function refreshInbox() {
+  populateRestaurants();
+  updateStats();
+  render();
+}
+
+function removeSavedReward(id) {
+  const index = rewards.findIndex(
+    item => item.id === id && isSavedReward(item)
+  );
+
+  if (index === -1) return;
+
+  const removed = rewards.splice(index,1)[0];
+
+  if (!saveRewards()) {
+    rewards.splice(index,0,removed);
+    return;
+  }
+
+  refreshInbox();
+}
+
+function clearSavedRewards() {
+  const savedCount = rewards.filter(isSavedReward).length;
+
+  if (!savedCount) {
+    alert("There are no saved rewards to clear.");
+    return;
+  }
+
+  if (!confirm(
+    "Delete all " + savedCount +
+    " saved demo rewards from this browser?"
+  )) return;
+
+  const previous = [...rewards];
+
+  for (let i = rewards.length - 1; i >= 0; i--) {
+    if (isSavedReward(rewards[i])) {
+      rewards.splice(i,1);
+    }
+  }
+
+  if (!saveRewards()) {
+    rewards.splice(0,rewards.length,...previous);
+    return;
+  }
+
+  refreshInbox();
+}
+
+loadSavedRewards();
 receiveDemoTransfer();
 
 const cards = document.getElementById("cards");
