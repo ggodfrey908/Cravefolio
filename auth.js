@@ -1,9 +1,25 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8/+esm';
-
-const supabase = createClient(
-  'https://pbczagafrazaylcaepqy.supabase.co',
-  'sb_publishable_xMDpDophp-dacKxk0Qggiw_339u1rIe'
-);
+// Diagnostic version: update the page before attempting the external import.
+const statusNode = document.getElementById('status');
+if (statusNode) statusNode.textContent = 'Step 1: auth.js started.';
+let supabase;
+try {
+  const library = await Promise.race([
+    import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8/+esm'),
+    new Promise((_, reject) => setTimeout(() => reject(new Error('Supabase library import timed out.')), 10000))
+  ]);
+  if (statusNode) statusNode.textContent = 'Step 2: Supabase library loaded.';
+  supabase = library.createClient(
+    'https://pbczagafrazaylcaepqy.supabase.co',
+    'sb_publishable_xMDpDophp-dacKxk0Qggiw_339u1rIe'
+  );
+  if (statusNode) statusNode.textContent = 'Step 3: Supabase client created.';
+} catch (error) {
+  if (statusNode) {
+    statusNode.textContent = 'Authentication startup failed: ' + (error?.message || 'Unknown error');
+    statusNode.className = 'status error';
+  }
+  throw error;
+}
 const $ = id => document.getElementById(id);
 const page = location.pathname.split('/').pop();
 const base = 'https://cravefolio.pages.dev';
@@ -73,11 +89,13 @@ function showAccount(session) {
   }
   if ($('email')) $('email').textContent = session.user.email || 'Unknown';
   if ($('identifier')) $('identifier').textContent = session.user.id;
+  notice('Account information loaded.');
 }
 
 // A timeout prevents the account page from showing Loading forever.
 async function initialize() {
   if (page !== 'account.html' && page !== 'login.html') return;
+  notice('Step 4: Checking your account session…');
   let timeoutId;
   try {
     const result = await Promise.race([
@@ -88,6 +106,7 @@ async function initialize() {
     ]);
     if (result.error) throw result.error;
     const session = result.data.session;
+    notice('Step 5: Session check completed.');
     if (page === 'account.html') showAccount(session);
     else if (session) location.replace('/account.html');
   } catch (error) {
