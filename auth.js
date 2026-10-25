@@ -94,6 +94,7 @@ function showAccount(session) {
 
 // A timeout prevents the account page from showing Loading forever.
 async function initialize() {
+  notice('Step 4B: Page detected as ' + page);
   if (page !== 'account.html' && page !== 'login.html') return;
   notice('Step 4: Checking your account session…');
   let timeoutId;
