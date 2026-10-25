@@ -331,6 +331,51 @@ main {
   margin-top:8px;
 }
 
+/* Original restaurant redemption links */
+
+.redemption-link {
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
+  margin-top:19px;
+  padding:13px 16px;
+  background:var(--yellow);
+  color:#173c2d;
+  border-radius:10px;
+  text-decoration:none;
+  text-align:center;
+  font-size:13px;
+  font-weight:800;
+  transition:background .2s;
+}
+
+.redemption-link:hover {
+  background:#f2b923;
+}
+
+.redemption-link:focus-visible {
+  outline:3px solid var(--green);
+  outline-offset:3px;
+}
+
+.redemption-unavailable {
+  margin-top:19px;
+  padding:13px 16px;
+  background:var(--sage);
+  color:var(--muted);
+  border-radius:10px;
+  text-align:center;
+  font-size:12px;
+  font-weight:700;
+}
+
+.redemption-note {
+  font-size:11px !important;
+  line-height:1.5;
+  margin-top:9px;
+}
+  
 .expiration-list {
   display:grid;
   gap:12px;
@@ -877,11 +922,82 @@ function renderRewards(rewards) {
       fieldValue(reward.source)
     );
 
-    if (reward.expirationState === 'expired') {
-      addText(card, 'span', 'Expired', 'status');
+   
+if (reward.expirationState === 'expired') {
+  addText(card, 'span', 'Expired', 'status');
+}
+
+// Only display redemption links approved by the backend.
+// The browser performs an additional basic URL safety check.
+
+let redemptionUrl = null;
+
+if (
+  reward.redemption_verified === true &&
+  typeof reward.redemption_url === 'string'
+) {
+  try {
+    const candidate = new URL(reward.redemption_url);
+
+    if (
+      candidate.protocol === 'https:' &&
+      !candidate.username &&
+      !candidate.password &&
+      candidate.port !== '443' &&
+      candidate.port !== ''
+    ) {
+      throw new Error('Unsupported port');
     }
 
-    list.appendChild(card);
+    if (
+      candidate.protocol === 'https:' &&
+      !candidate.username &&
+      !candidate.password
+    ) {
+      redemptionUrl = candidate.href;
+    }
+  } catch {
+    redemptionUrl = null;
+  }
+}
+
+if (
+  redemptionUrl &&
+  reward.expirationState !== 'expired'
+) {
+  const link = document.createElement('a');
+
+  link.className = 'redemption-link';
+  link.href = redemptionUrl;
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+
+  link.textContent = 'Open in Restaurant ↗';
+
+  card.appendChild(link);
+
+  addText(
+    card,
+    'p',
+    reward.redemption_type === 'exact_offer'
+      ? 'Opens the original offer destination. Restaurant login or eligibility may still be required.'
+      : 'Opens the restaurant destination. You may need to find your offer after signing in.',
+    'redemption-note'
+  );
+
+} else {
+  addText(
+    card,
+    'div',
+    reward.expirationState === 'expired'
+      ? 'Reward expiration date has passed'
+      : 'Redemption link unavailable',
+    'redemption-unavailable'
+  );
+}
+
+list.appendChild(card);
+
   }
 }
 
