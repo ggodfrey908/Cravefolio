@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Add Reward | Cravefolio</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#173e32;background:#fbf8eb}*{box-sizing:border-box}body{margin:0}header{background:#174f3c;color:white;padding:20px max(20px,calc((100vw - 850px)/2))}header a{color:white;text-decoration:none}nav{display:flex;gap:20px;flex-wrap:wrap;margin-top:12px}main{max-width:850px;margin:36px auto;padding:0 20px}h1{font-size:2rem;margin-bottom:8px}p{line-height:1.55}.panel{background:white;border:1px solid #d9e2d6;border-radius:16px;padding:24px;margin:22px 0;box-shadow:0 3px 15px #173e320a}label{display:block;font-weight:650;margin:16px 0 6px}input,select,textarea{width:100%;font:inherit;padding:12px;border:1px solid #9eaea4;border-radius:9px;background:white;color:#173e32}textarea{min-height:100px;resize:vertical}.hint{color:#52645c;font-size:.9rem;margin-top:5px}.button{display:inline-block;background:#176044;color:white;border:0;border-radius:9px;padding:12px 18px;font:inherit;font-weight:650;cursor:pointer;text-decoration:none}.button:disabled{opacity:.5;cursor:not-allowed}.secondary{background:#e8efe5;color:#173e32}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}.status{padding:12px;border-radius:8px;background:#e8efe5;margin:16px 0}.error{background:#ffe9e5;color:#8b2821}.preview{white-space:pre-wrap;line-height:1.8}.check{display:flex;align-items:flex-start;gap:10px;margin-top:16px}.check input{width:auto;margin-top:5px}.check label{margin:0;font-weight:400}.hidden{display:none}footer{padding:28px 20px;text-align:center;color:#52645c}
+</style>
+</head>
+<body>
+<header><strong>Cravefolio</strong><nav><a href="/">Home</a><a href="/rewards.html">My Rewards</a><a href="/account.html">Account</a></nav></header>
+<main>
+<h1>Add a reward</h1><p>Enter the details from a restaurant email or app. Review them before saving. Cravefolio does not store the original email on this page.</p>
+<div id="status" class="status" role="status" aria-live="polite">Checking your sign-in…</div>
+<section id="editor" class="panel hidden"><form id="reward-form">
+<label for="restaurant">Restaurant *</label><select id="restaurant" required><option value="">Choose a restaurant</option><option>McDonald's</option><option>Smoothie King</option><option>Starbucks</option><option>Chipotle</option><option>Panera Bread</option><option>Taco Bell</option><option>Dunkin'</option><option>Wendy's</option><option>Burger King</option><option>Domino's</option><option>Chick-fil-A</option><option value="Other">Other restaurant…</option></select>
+<div id="other-wrap" class="hidden"><label for="other-restaurant">Restaurant name *</label><input id="other-restaurant" maxlength="100"></div>
+<label for="reward">Reward or offer *</label><textarea id="reward" maxlength="180" required placeholder="Example: $1.29 any size Premium Roast or Iced Coffee"></textarea><div class="hint">Describe only what the offer actually says. Maximum 180 characters.</div>
+<label for="points">Points balance (optional)</label><input id="points" maxlength="100" placeholder="Example: 3445 points"><div class="hint">Leave blank if the email does not show a balance.</div>
+<label for="expiration">Expiration date (optional)</label><input id="expiration" type="date"><div class="hint">Leave blank if unknown. Do not estimate a date from an unclear offer.</div>
+<div class="actions"><button class="button" type="submit">Review reward</button></div>
+</form></section>
+<section id="review" class="panel hidden"><h2>Review before saving</h2><div id="preview" class="preview"></div><div class="check"><input type="checkbox" id="confirmed"><label for="confirmed">I reviewed these details against my original restaurant message or app and confirm they are accurate.</label></div><div class="actions"><button id="edit" type="button" class="button secondary">Edit details</button><button id="save" type="button" class="button" disabled>Save to My Rewards</button></div></section>
+</main><footer>Cravefolio · Your rewards, in one place.</footer>
+<script type="module">
+const API='https://cravefolio-email-test.ggodfrey908.workers.dev';
+const status=document.getElementById('status');const $=id=>document.getElementById(id);
+function notice(message,error=false){status.textContent=message;status.className='status'+(error?' error':'');}
+let supabase,approvedUser,payload,saving=false;
+try{
+ const library=await Promise.race([import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8/+esm'),new Promise((_,reject)=>setTimeout(()=>reject(new Error('Authentication library timed out')),10000))]);
+ supabase=library.createClient('https://pbczagafrazaylcaepqy.supabase.co','sb_publishable_xMDpDophp-dacKxk0Qggiw_339u1rIe');
+ const {data,error}=await supabase.auth.getUser();if(error||!data.user)throw new Error('Please sign in before adding a reward.');approvedUser=data.user;
+ $('editor').classList.remove('hidden');notice('Signed in. Your reward will be saved only to your account.');
+}catch(error){notice(error.message||'Could not check your sign-in.',true);if(!approvedUser){const a=document.createElement('a');a.href='/login.html';a.textContent=' Go to sign in';status.append(a);}}
+$('restaurant').addEventListener('change',()=>{$('other-wrap').classList.toggle('hidden',$('restaurant').value!=='Other');$('other-restaurant').required=$('restaurant').value==='Other';});
+$('reward-form').addEventListener('submit',event=>{event.preventDefault();if(!approvedUser||!event.target.reportValidity())return;
+ const restaurant=($('restaurant').value==='Other'?$('other-restaurant').value:$('restaurant').value).trim();const reward=$('reward').value.trim();const points=$('points').value.trim()||null;const expiration=$('expiration').value||null;
+ if(!restaurant||restaurant.length>100||!reward||reward.length>180||/[^\S ]|[\u0000-\u001F\u007F]/.test(restaurant+reward+(points||''))){notice('Check your fields for invalid characters or length.',true);return;}
+ payload={restaurant,reward,points,expiration,confirmed:true};$('preview').textContent=`Restaurant: ${restaurant}\nOffer: ${reward}\nPoints: ${points||'Not provided'}\nExpiration: ${expiration||'Unknown'}`;$('confirmed').checked=false;$('save').disabled=true;$('editor').classList.add('hidden');$('review').classList.remove('hidden');notice('Review the details and confirm before saving.');});
+$('confirmed').addEventListener('change',()=>{$('save').disabled=!$('confirmed').checked||saving;});
+$('edit').addEventListener('click',()=>{if(saving)return;$('review').classList.add('hidden');$('editor').classList.remove('hidden');notice('Edit the details, then review again.');});
+$('save').addEventListener('click',async()=>{if(saving||!$('confirmed').checked||!payload)return;saving=true;$('save').disabled=true;$('edit').disabled=true;notice('Saving your reward…');try{
+ const {data,error}=await supabase.auth.getSession();if(error||!data.session?.access_token)throw new Error('Your session expired. Please sign in again.');
+ const response=await fetch(API+'/api/rewards',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+data.session.access_token},body:JSON.stringify(payload)});
+ const result=await response.json();if(!response.ok||!result.success)throw new Error(result.error||'Unable to save reward.');notice('Reward saved! Opening your dashboard…');location.assign('/rewards.html');
+ }catch(error){notice(error.message||'Save failed. Please try again.',true);saving=false;$('edit').disabled=false;$('save').disabled=!$('confirmed').checked;}});
+</script>
+</body></html>
