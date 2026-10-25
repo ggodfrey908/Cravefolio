@@ -121,4 +121,8 @@ async function initialize() {
   }
 }
 
-initialize();
+notice('Step 4A: Reached initialization.');
+initialize().catch(error => {
+  notice('Initialization failed: ' + error.message, true);
+  console.error(error);
+});
