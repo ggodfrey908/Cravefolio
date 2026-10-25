@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Connection Test | Cravefolio</title>
+<style>
+:root{--green:#07543d;--cream:#faf8ef;--yellow:#ffc642}*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--green);font-family:Arial,Helvetica,sans-serif}header{background:#fffdf7;border-bottom:1px solid #e0e7d9;padding:20px 24px}.logo{color:inherit;text-decoration:none;font-size:25px;font-weight:800}.logo span{color:#d99d00}main{max-width:740px;margin:45px auto;padding:0 24px 70px}h1{font:bold clamp(32px,5vw,44px) Georgia,serif}.panel{background:#fffdf7;border:1px solid #e0e7d9;border-radius:16px;padding:24px}p{line-height:1.6}.status{padding:14px;background:#e8efdf;border-radius:8px;min-height:48px;overflow-wrap:anywhere}.status.error{background:#ffe5df;color:#792a19}a{color:inherit}small{display:block;margin-top:16px;line-height:1.5}
+</style>
+</head>
+<body><header><a class="logo" href="/">Crave<span>folio</span></a></header>
+<main><h1>Account connection test</h1><p>This page checks whether your signed-in Cravefolio account can access its own rewards through the Cloudflare Worker. It does not save or change rewards.</p><section class="panel"><p id="status" class="status" role="status" aria-live="polite">Starting connection test…</p><p id="result"></p><small>Do not share passwords, access tokens, or your customer identifier. You can report just the status message and reward count.</small></section><p><a href="/account.html">Back to account</a></p></main>
+<script type="module">
+const status = document.getElementById('status');
+const result = document.getElementById('result');
+const report = (message, error = false) => { status.textContent = message; status.className = error ? 'status error' : 'status'; };
+const timeout = (promise, ms) => { let timer; return Promise.race([promise, new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('Connection timed out.')), ms); })]).finally(() => clearTimeout(timer)); };
+try {
+  report('Loading Supabase library…');
+  const { createClient } = await timeout(import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8/+esm'), 12000);
+  const supabase = createClient('https://pbczagafrazaylcaepqy.supabase.co', 'sb_publishable_xMDpDophp-dacKxk0Qggiw_339u1rIe');
+  report('Checking sign-in session…');
+  const { data, error } = await timeout(supabase.auth.getSession(), 12000);
+  if (error) throw error;
+  if (!data.session?.access_token) {
+    report('Not signed in. Please sign in, then return to this page.', true);
+    result.innerHTML = '<a href="/login.html">Go to login</a>';
+  } else {
+    report('Contacting the rewards backend…');
+    const response = await timeout(fetch('https://cravefolio-email-test.ggodfrey908.workers.dev/api/rewards', {
+      method: 'GET', headers: { Authorization: 'Bearer ' + data.session.access_token }, cache: 'no-store'
+    }), 15000);
+    const payload = await response.json();
+    if (!response.ok || payload.success !== true) {
+      report('Backend response: HTTP ' + response.status + ' — ' + (payload.error || 'Unexpected response'), true);
+    } else {
+      report('Success! Your signed-in account connected to the rewards backend.');
+      result.textContent = 'Rewards returned for this account: ' + payload.count + '. An empty list is expected for a new account.';
+    }
+  }
+} catch (error) {
+  report('Connection test failed: ' + (error?.message || 'Unknown error'), true);
+}
+</script></body></html>
