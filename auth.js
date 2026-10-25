@@ -21,7 +21,7 @@ try {
   throw error;
 }
 const $ = id => document.getElementById(id);
-const page = location.pathname.split('/').pop();
+const page = location.pathname.split('/').pop().replace(/\.html$/, '') + '.html';
 const base = 'https://cravefolio.pages.dev';
 
 function notice(message, error = false) {
