@@ -1,0 +1,251 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Account Isolation Test | Cravefolio</title>
+
+  <style>
+    :root {
+      --green: #07543d;
+      --cream: #faf8ef;
+      --yellow: #ffc642;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--cream);
+      color: var(--green);
+      font-family: Arial, sans-serif;
+    }
+
+    main {
+      max-width: 700px;
+      margin: 50px auto;
+      padding: 24px;
+    }
+
+    section {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      border: 1px solid #dce4d8;
+    }
+
+    button {
+      background: var(--green);
+      color: white;
+      border: 0;
+      border-radius: 8px;
+      padding: 12px 18px;
+      cursor: pointer;
+      margin: 8px 0;
+    }
+
+    button:disabled { opacity: .5; }
+
+    input {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      margin: 12px 0;
+      border: 1px solid #aaa;
+      border-radius: 8px;
+      font: inherit;
+    }
+
+    #status, #result {
+      padding: 14px;
+      background: #e8efdf;
+      border-radius: 8px;
+      overflow-wrap: anywhere;
+    }
+
+    .error {
+      background: #ffe5df !important;
+      color: #792a19;
+    }
+  </style>
+</head>
+
+<body>
+<main>
+  <h1>Cravefolio Isolation Test</h1>
+
+  <p>
+    Temporary development page for checking
+    account-specific reward access.
+  </p>
+
+  <section>
+    <p id="status">Checking authentication...</p>
+
+    <button id="list" disabled>
+      Check My Rewards
+    </button>
+
+    <h3>Check access to a specific reward</h3>
+
+    <input
+      id="reward-id"
+      placeholder="Enter fictional reward ID"
+      autocomplete="off"
+    >
+
+    <button id="check" disabled>
+      Check Reward Access
+    </button>
+
+    <p id="result" aria-live="polite">
+      No test performed yet.
+    </p>
+  </section>
+</main>
+
+<script type="module">
+const SUPABASE_URL =
+  'https://pbczagafrazaylcaepqy.supabase.co';
+
+const SUPABASE_KEY =
+  'sb_publishable_xMDpDophp-dacKxk0Qggiw_339u1rIe';
+
+const WORKER_URL =
+  'https://cravefolio-email-test.ggodfrey908.workers.dev';
+
+const $ = id => document.getElementById(id);
+
+function status(message, error = false) {
+  $('status').textContent = message;
+  $('status').className = error ? 'error' : '';
+}
+
+function result(message, error = false) {
+  $('result').textContent = message;
+  $('result').className = error ? 'error' : '';
+}
+
+let supabase;
+
+try {
+  const library = await import(
+    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8/+esm'
+  );
+
+  supabase = library.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+  const { data, error } = await supabase.auth.getSession();
+
+  if (error) throw error;
+
+  if (!data.session) {
+    status('Not signed in. Please sign in first.', true);
+  } else {
+    status('Authenticated. Ready to test.');
+    $('list').disabled = false;
+    $('check').disabled = false;
+  }
+
+} catch (error) {
+  status(
+    'Authentication startup failed: ' + error.message,
+    true
+  );
+}
+
+async function requestRewards(path) {
+  const { data, error } = await supabase.auth.getSession();
+
+  if (error) throw error;
+
+  if (!data.session?.access_token) {
+    throw new Error('Session expired. Please sign in again.');
+  }
+
+  const response = await fetch(WORKER_URL + path, {
+    method: 'GET',
+    headers: {
+      Authorization: 'Bearer ' + data.session.access_token
+    },
+    cache: 'no-store'
+  });
+
+  const body = await response.json();
+
+  return {
+    status: response.status,
+    ok: response.ok,
+    body
+  };
+}
+
+$('list').addEventListener('click', async () => {
+  result('Checking your rewards...');
+
+  try {
+    const response = await requestRewards('/api/rewards');
+
+    if (!response.ok) {
+      throw new Error(
+        response.body.error || 'Request failed'
+      );
+    }
+
+    result(
+      'Success! Rewards visible to this account: ' +
+      response.body.count
+    );
+
+  } catch (error) {
+    result(error.message, true);
+  }
+});
+
+$('check').addEventListener('click', async () => {
+  const id = $('reward-id').value.trim();
+
+  if (!id || id.length > 100 ||
+      !/^[a-zA-Z0-9-]+$/.test(id)) {
+    result('Enter a valid fictional reward ID.', true);
+    return;
+  }
+
+  result('Checking reward access...');
+
+  try {
+    const response = await requestRewards(
+      '/api/rewards/' + encodeURIComponent(id)
+    );
+
+    if (response.status === 404) {
+      result(
+        'HTTP 404: Reward not found for this account.'
+      );
+      return;
+    }
+
+    if (response.ok) {
+      result(
+        'HTTP 200: This account can access that reward.'
+      );
+      return;
+    }
+
+    result(
+      'HTTP ' + response.status + ': ' +
+      (response.body.error || 'Request failed'),
+      true
+    );
+
+  } catch (error) {
+    result(error.message, true);
+  }
+});
+</script>
+</body>
+</html>
