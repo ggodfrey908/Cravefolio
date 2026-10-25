@@ -62,7 +62,9 @@
       background: #e8efdf;
       border-radius: 8px;
       overflow-wrap: anywhere;
+      white-space: pre-wrap;
     }
+
 
     .error {
       background: #ffe5df !important;
@@ -249,7 +251,9 @@ $('list').addEventListener('click', async () => {
 
     result(
       'Success! Rewards visible to this account: ' +
-      response.body.count
+      response.body.count +
+      '\nReward IDs:\n' +
+      (response.body.rewards || []).map(r => r.id).join('\n')
     );
 
   } catch (error) {
