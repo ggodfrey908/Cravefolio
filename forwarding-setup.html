@@ -2,63 +2,318 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Email Setup | Cravefolio</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>One-Time Sync | Cravefolio</title>
 <style>
-:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#183c32;background:#faf9ee}*{box-sizing:border-box}body{margin:0}header{background:#184f3d;color:white;padding:20px max(20px,calc((100vw - 760px)/2))}header a{color:white;text-decoration:none;font-weight:750}main{max-width:760px;margin:44px auto;padding:0 20px}section{background:white;border:1px solid #dbe5d8;border-radius:18px;padding:28px;box-shadow:0 5px 24px #173e3010}h1{margin:0 0 12px;font-size:clamp(1.6rem,4vw,2.3rem)}h2{font-size:1.25rem;margin-top:28px}p,li{line-height:1.6}button{border:0;background:#1c6849;color:white;padding:13px 20px;border-radius:10px;font:inherit;font-weight:700;cursor:pointer}button:disabled{opacity:.55;cursor:wait}.secondary{background:#e5f0e6;color:#164733}#address,.code{overflow-wrap:anywhere;background:#f0f5ec;padding:16px;border-radius:10px;font-weight:700;margin:18px 0}#status,#verification-status{min-height:24px}.error{color:#a32828}.muted{color:#52695d;font-size:.94rem}nav{margin-top:22px}nav a{color:#1c6849;margin-right:18px}[hidden]{display:none!important}a{color:#1c6849;overflow-wrap:anywhere}
+:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#183c32;background:#faf9ee}
+*{box-sizing:border-box}
+body{margin:0}
+header{background:#184f3d;color:white;padding:20px max(20px,calc((100vw - 760px)/2))}
+header a{color:white;text-decoration:none;font-weight:750}
+main{max-width:760px;margin:44px auto;padding:0 20px}
+section{background:white;border:1px solid #dbe5d8;border-radius:18px;padding:28px;box-shadow:0 5px 24px #173e3010}
+h1{margin:0 0 12px;font-size:clamp(1.6rem,4vw,2.3rem)}
+h2{font-size:1.25rem;margin-top:28px}
+p,li{line-height:1.6}
+button{border:0;background:#1c6849;color:white;padding:13px 20px;border-radius:10px;font:inherit;font-weight:700;cursor:pointer}
+button:disabled{opacity:.55;cursor:not-allowed}
+.secondary{background:#e5f0e6;color:#164733}
+#address,.code{overflow-wrap:anywhere;background:#f0f5ec;padding:16px;border-radius:10px;font-weight:700;margin:18px 0}
+#status,#verification-status{min-height:24px}
+.error{color:#a32828}
+.muted{color:#52695d;font-size:.94rem}
+nav{margin-top:22px}
+nav a{color:#1c6849;margin-right:18px}
+[hidden]{display:none!important}
+a{color:#1c6849;overflow-wrap:anywhere}
+
+/* Beta 2 additions */
+.beta-label{display:inline-block;background:#fff0bb;color:#665014;padding:6px 12px;border-radius:30px;font-size:.8rem;font-weight:800;margin-bottom:14px}
+.setup-box{background:#fafcf7;border:1px solid #dbe5d8;border-radius:14px;padding:20px;margin-top:24px}
+.setup-box h2{margin-top:0}
+textarea{display:block;width:100%;min-height:110px;padding:13px;border:1px solid #b8cdbd;border-radius:10px;font:inherit;color:#183c32;background:white;resize:vertical;margin:12px 0}
+textarea:focus{outline:2px solid #1c6849;outline-offset:2px}
+.filter-output{background:#f0f5ec;padding:16px;border-radius:10px;overflow-wrap:anywhere;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.9rem;margin:14px 0}
+.button-row{display:flex;gap:10px;flex-wrap:wrap}
+.notice{background:#fff8de;border-left:4px solid #d4a52c;padding:13px 16px;border-radius:7px;margin:18px 0}
+.success{color:#176340}
+.small-heading{font-size:.9rem;font-weight:800;margin-bottom:6px}
+@media(max-width:520px){
+section{padding:20px}
+button{width:100%}
+.button-row{flex-direction:column}
+}
 </style>
 </head>
+
 <body>
 <header><a href="/">Cravefolio</a></header>
-<main><section>
+
+<main>
+<section>
+
+<div class="beta-label">BETA 2 · ONE-TIME SYNC</div>
+
 <h1>Set up automatic rewards emails</h1>
-<p>Cravefolio gives your account a unique forwarding address. Forward restaurant rewards emails there to have supported offers added to your dashboard automatically.</p>
-<p id="status" role="status" aria-live="polite">Checking your sign-in…</p>
-<button id="create" type="button" hidden>Generate my forwarding address</button>
+
+<p>
+Connect your restaurant rewards using one private forwarding
+address and one combined Gmail filter.
+</p>
+
+<p>
+Once configured, matching new restaurant emails can be
+forwarded to Cravefolio automatically.
+</p>
+
+<p id="status" role="status" aria-live="polite">
+Checking your sign-in…
+</p>
+
+<button id="create" type="button" hidden>
+Generate my forwarding address
+</button>
 
 <div id="result" hidden>
-<div id="address"></div>
-<button id="copy" class="secondary" type="button">Copy address</button>
-<p class="muted">Keep this address private. Only forward restaurant reward messages you want Cravefolio to process. Some email formats and offers may not be recognized yet; check your dashboard after forwarding.</p>
 
-<h2>Connect Gmail forwarding</h2>
+<h2>Step 1 — Your private forwarding address</h2>
+
+<div id="address"></div>
+
+<button id="copy" class="secondary" type="button">
+Copy address
+</button>
+
+<p class="muted">
+Keep this address private. Only forward restaurant reward
+messages you want Cravefolio to process. Some email formats
+and offers may not be recognized yet; check your dashboard
+after forwarding.
+</p>
+
+<div class="setup-box">
+
+<h2>Step 2 — Verify your address with Gmail</h2>
+
 <ol>
-<li>In Gmail on a desktop browser, open Settings → See all settings → Forwarding and POP/IMAP.</li>
-<li>Choose Add a forwarding address and paste your private Cravefolio address. Confirm Gmail's prompts.</li>
-<li>Gmail should send a confirmation email to Cravefolio. Use “Check for verification” below to see whether it arrived. It may take a little time.</li>
-<li>Use the confirmation code or link below to complete Gmail's verification. Only proceed if you requested this confirmation yourself.</li>
-<li>In Gmail, create a filter for the restaurant reward senders you choose. Select “Forward it to” and your verified Cravefolio address. <strong>Do not turn on forwarding for all incoming mail.</strong></li>
+<li>
+Open Gmail in a desktop browser.
+</li>
+<li>
+Go to Settings → See all settings → Forwarding and POP/IMAP.
+</li>
+<li>
+Choose Add a forwarding address and paste your private
+Cravefolio address.
+</li>
+<li>
+Confirm Gmail's prompts. Gmail should send a verification
+message to Cravefolio.
+</li>
+<li>
+Click Check for verification below. It may take a little time
+for the message to arrive.
+</li>
+<li>
+Use the confirmation code or link to complete Gmail's
+verification. Only proceed if you requested it yourself.
+</li>
 </ol>
 
-<button id="check" class="secondary" type="button">Check for verification</button>
-<p id="verification-status" role="status" aria-live="polite">No verification check yet.</p>
+<button id="check" class="secondary" type="button">
+Check for verification
+</button>
+
+<p id="verification-status" role="status" aria-live="polite">
+No verification check yet.
+</p>
 
 <div id="verification" hidden>
-<p><strong>Gmail verification received.</strong> This is private to your signed-in account. It may expire; request a new confirmation in Gmail if necessary.</p>
+
+<p>
+<strong>Gmail verification received.</strong>
+This is private to your signed-in account. It may expire;
+request a new confirmation in Gmail if necessary.
+</p>
 
 <div id="code-wrap" hidden>
+
 <p>Confirmation code:</p>
+
 <div id="verification-code" class="code"></div>
-<button id="copy-code" class="secondary" type="button">Copy code</button>
+
+<button id="copy-code" class="secondary" type="button">
+Copy code
+</button>
+
 </div>
 
 <p id="link-wrap" hidden>
-<a id="verification-link" target="_blank" rel="noopener noreferrer">Open Gmail confirmation link</a>
+<a id="verification-link" target="_blank" rel="noopener noreferrer">
+Open Gmail confirmation link
+</a>
 </p>
 
 <p class="muted" id="received"></p>
+
 </div>
 
-<p class="muted">Cravefolio cannot see whether you finished Gmail's setup. After completing the filter, send a supported restaurant rewards message through it and check My rewards.</p>
+</div>
+
+<div class="setup-box">
+
+<h2>Step 3 — Create your combined Gmail filter</h2>
+
+<p>
+Instead of creating a separate forwarding rule for every
+restaurant, combine their verified sender addresses into
+one Gmail filter.
+</p>
+
+<div class="notice">
+<strong>Sender directory preparation:</strong>
+Cravefolio's verified restaurant sender list is still being
+assembled. Until it is published, add only restaurant sender
+addresses you have confirmed from genuine emails in your inbox.
+Do not guess addresses.
+</div>
+
+<label for="sender-list" class="small-heading">
+Verified restaurant sender addresses
+</label>
+
+<p class="muted">
+Enter one email address per line. You can also separate
+addresses with commas. The generator removes duplicates.
+</p>
+
+<textarea
+id="sender-list"
+placeholder="Enter verified restaurant sender email addresses here"
+spellcheck="false"
+autocomplete="off"
+></textarea>
+
+<div class="button-row">
+<button id="generate-filter" type="button">
+Generate Gmail Filter
+</button>
+
+<button id="clear-senders" class="secondary" type="button">
+Clear list
+</button>
+</div>
+
+<p id="filter-status" role="status" aria-live="polite" class="muted">
+Enter your verified sender addresses to generate the filter.
+</p>
+
+<div id="filter-result" hidden>
+
+<p class="small-heading">
+Your combined Gmail filter
+</p>
+
+<div id="filter-output" class="filter-output"></div>
+
+<button id="copy-filter" class="secondary" type="button">
+Copy Gmail Filter
+</button>
+
+<p class="muted">
+Copy this expression into Gmail's <strong>From</strong>
+filter field.
+</p>
+
+</div>
+
+</div>
+
+<div class="setup-box">
+
+<h2>Step 4 — Activate One-Time Sync</h2>
+
+<ol>
+<li>
+In Gmail, click the search options icon beside the search bar.
+</li>
+
+<li>
+Paste your generated filter into the <strong>From</strong>
+field.
+</li>
+
+<li>
+Click <strong>Create filter</strong>.
+</li>
+
+<li>
+Select <strong>Forward it to</strong>.
+</li>
+
+<li>
+Choose your verified private Cravefolio forwarding address.
+</li>
+
+<li>
+Click <strong>Create filter</strong> to save.
+</li>
+</ol>
+
+<div class="notice">
+<strong>Privacy reminder:</strong>
+Do not enable Gmail's general forwarding option for all
+incoming mail. Only forward messages matching your
+restaurant filter.
+</div>
+
+<p class="muted">
+Cravefolio cannot independently confirm that you finished
+Gmail's filter setup. After activating it, send or receive
+a supported restaurant rewards email and check your dashboard.
+The filter applies to matching new incoming emails; it does
+not automatically import your entire email history.
+</p>
+
+<a href="https://mail.google.com/mail/u/0/#settings/filters"
+target="_blank" rel="noopener noreferrer">
+Open Gmail filter settings ↗
+</a>
+
+</div>
+
+<div class="setup-box">
+
+<h2>Adding more restaurants later</h2>
+
+<p>
+When Cravefolio publishes additional verified restaurant
+senders, you can update your existing Gmail filter rather
+than creating another forwarding destination.
+</p>
+
+<p class="muted">
+The combined filter must include each supported sender you
+want to forward. Newly added restaurants are not automatically
+included in an already-saved Gmail filter.
+</p>
+
+</div>
+
 </div>
 
 <nav>
 <a href="/rewards.html">My rewards</a>
+<a href="/restaurants.html">Restaurants</a>
 <a href="/account.html">My account</a>
 </nav>
-</section></main>
+
+</section>
+</main>
 
 <script type="module">
+
 const status=document.getElementById('status'),
 create=document.getElementById('create'),
 result=document.getElementById('result'),
@@ -75,9 +330,11 @@ const setStatus=(message,error=false)=>{
 };
 
 const base='https://cravefolio-email-test.ggodfrey908.workers.dev';
+
 let client;
 
 async function authorizedFetch(path,method='GET'){
+
  const {data:{session},error}=await client.auth.getSession();
 
  if(error||!session)
@@ -100,6 +357,7 @@ async function authorizedFetch(path,method='GET'){
 }
 
 try{
+
  const {createClient}=await import(
   'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8/+esm'
  );
@@ -112,16 +370,34 @@ try{
  const {data:{user},error}=await client.auth.getUser();
 
  if(error||!user){
-  setStatus('Please sign in first. Redirecting to login…',true);
-  setTimeout(()=>location.replace('/login.html'),1200);
+
+  setStatus(
+   'Please sign in first. Redirecting to login…',
+   true
+  );
+
+  setTimeout(
+   ()=>location.replace('/login.html'),
+   1200
+  );
+
  }else{
+
   await loadAddress('GET');
+
  }
+
 }catch(e){
- setStatus('Could not start email setup. Please reload the page.',true);
+
+ setStatus(
+  'Could not start email setup. Please reload the page.',
+  true
+ );
+
 }
 
 async function loadAddress(method){
+
  create.disabled=true;
 
  setStatus(
@@ -131,66 +407,111 @@ async function loadAddress(method){
  );
 
  try{
-  const data=await authorizedFetch('/api/forwarding-address',method);
+
+  const data=await authorizedFetch(
+   '/api/forwarding-address',
+   method
+  );
 
   if(
    data.provisioned&&
    data.enabled&&
    typeof data.forwardingAddress==='string'
   ){
+
    address.textContent=data.forwardingAddress;
    result.hidden=false;
    create.hidden=true;
+
    setStatus('Your forwarding address is ready.');
+
   }else if(data.provisioned&&!data.enabled){
+
    result.hidden=true;
    create.hidden=true;
+
    setStatus(
     'Your forwarding address is currently disabled. Please contact support.',
     true
    );
+
   }else{
+
    result.hidden=true;
    create.hidden=false;
+
    setStatus(
     'Your account is ready. Generate your private forwarding address.'
    );
+
   }
+
  }catch(e){
-  setStatus(e.message||'Unable to connect to Cravefolio.',true);
+
+  setStatus(
+   e.message||'Unable to connect to Cravefolio.',
+   true
+  );
 
   if(method==='POST')
    create.hidden=false;
+
  }finally{
+
   create.disabled=false;
+
  }
+
 }
 
-create.addEventListener('click',()=>loadAddress('POST'));
+create.addEventListener(
+ 'click',
+ ()=>loadAddress('POST')
+);
 
 copy.addEventListener('click',async()=>{
+
  try{
-  await navigator.clipboard.writeText(address.textContent);
+
+  await navigator.clipboard.writeText(
+   address.textContent
+  );
+
   copy.textContent='Copied!';
+
  }catch{
+
   copy.textContent='Select and copy the address above';
+
  }
+
 });
 
 check.addEventListener('click',async()=>{
+
  check.disabled=true;
- vStatus.textContent='Checking for a recent Gmail verification message…';
+
+ vStatus.textContent=
+  'Checking for a recent Gmail verification message…';
+
  vStatus.className='';
  verification.hidden=true;
 
  try{
-  const data=await authorizedFetch('/api/forwarding-verification');
+
+  const data=await authorizedFetch(
+   '/api/forwarding-verification'
+  );
+
   const record=data.verification;
 
   if(!record){
+
    vStatus.textContent=
     'No current Gmail verification found. If you just requested it, wait a moment and check again.';
+
    return;
+
   }
 
   const code=typeof record.verification_code==='string'
@@ -207,6 +528,7 @@ check.addEventListener('click',async()=>{
   let validLink=false;
 
   try{
+
    const u=new URL(link);
 
    validLink=
@@ -214,6 +536,7 @@ check.addEventListener('click',async()=>{
     u.hostname==='mail.google.com'&&
     !u.username&&
     !u.password;
+
   }catch{}
 
   document.getElementById('link-wrap').hidden=!validLink;
@@ -227,28 +550,188 @@ check.addEventListener('click',async()=>{
     :'';
 
   verification.hidden=false;
-  vStatus.textContent='A Gmail verification message was found.';
+
+  vStatus.textContent=
+   'A Gmail verification message was found.';
+
  }catch(e){
-  vStatus.textContent=e.message||'Unable to check verification.';
+
+  vStatus.textContent=
+   e.message||'Unable to check verification.';
+
   vStatus.className='error';
+
  }finally{
+
   check.disabled=false;
+
  }
+
 });
 
-document.getElementById('copy-code').addEventListener('click',async()=>{
+document.getElementById('copy-code')
+ .addEventListener('click',async()=>{
+
  const button=document.getElementById('copy-code');
 
  try{
+
   await navigator.clipboard.writeText(
    document.getElementById('verification-code').textContent
   );
 
   button.textContent='Copied!';
+
  }catch{
+
   button.textContent='Select and copy the code above';
+
  }
+
 });
+
+/* Beta 2: combined Gmail filter generator */
+
+const senderList=document.getElementById('sender-list');
+const generateFilter=document.getElementById('generate-filter');
+const clearSenders=document.getElementById('clear-senders');
+const filterStatus=document.getElementById('filter-status');
+const filterResult=document.getElementById('filter-result');
+const filterOutput=document.getElementById('filter-output');
+const copyFilter=document.getElementById('copy-filter');
+
+function parseSenders(value){
+
+ const entries=value
+  .split(/[\n,;]+/)
+  .map(item=>item.trim().toLowerCase())
+  .filter(Boolean);
+
+ const valid=[];
+ const invalid=[];
+
+ const emailPattern=/^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$/i;
+
+ for(const entry of entries){
+
+  if(!emailPattern.test(entry)||/[\s{}()]/.test(entry)){
+
+   invalid.push(entry);
+
+  }else if(!valid.includes(entry)){
+
+   valid.push(entry);
+
+  }
+
+ }
+
+ return {valid,invalid};
+
+}
+
+function resetFilter(){
+
+ filterResult.hidden=true;
+ filterOutput.textContent='';
+ copyFilter.textContent='Copy Gmail Filter';
+
+}
+
+senderList.addEventListener('input',()=>{
+
+ resetFilter();
+
+ filterStatus.textContent=
+  'Generate the filter after updating your sender list.';
+
+ filterStatus.className='muted';
+
+});
+
+generateFilter.addEventListener('click',()=>{
+
+ resetFilter();
+
+ const {valid,invalid}=parseSenders(senderList.value);
+
+ if(invalid.length){
+
+  filterStatus.textContent=
+   'Please correct these invalid email addresses: '+
+   invalid.join(', ');
+
+  filterStatus.className='error';
+
+  return;
+
+ }
+
+ if(!valid.length){
+
+  filterStatus.textContent=
+   'Add at least one verified restaurant sender email address.';
+
+  filterStatus.className='error';
+
+  return;
+
+ }
+
+ /*
+ Gmail supports grouping alternative search terms
+ inside braces. Each term is scoped to its sender.
+ */
+
+ const expression=
+  '{'+valid.map(email=>'from:'+email).join(' ')+'}';
+
+ filterOutput.textContent=expression;
+ filterResult.hidden=false;
+
+ filterStatus.textContent=
+  'Filter generated for '+valid.length+
+  ' unique sender'+(valid.length===1?'':'s')+'.';
+
+ filterStatus.className='success';
+
+});
+
+clearSenders.addEventListener('click',()=>{
+
+ senderList.value='';
+ resetFilter();
+
+ filterStatus.textContent=
+  'Sender list cleared.';
+
+ filterStatus.className='muted';
+
+});
+
+copyFilter.addEventListener('click',async()=>{
+
+ const expression=filterOutput.textContent;
+
+ if(!expression)
+  return;
+
+ try{
+
+  await navigator.clipboard.writeText(expression);
+
+  copyFilter.textContent='Copied!';
+
+ }catch{
+
+  copyFilter.textContent=
+   'Select and copy the filter above';
+
+ }
+
+});
+
 </script>
+
 </body>
 </html>
