@@ -1,40 +1,25 @@
 
+<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
   <url>
-    <loc>https://cravefolio.pages.dev/</loc>
+    <loc>https://cravefolio.net/</loc>
   </url>
-
   <url>
-    <loc>https://cravefolio.pages.dev/about.html</loc>
+    <loc>https://cravefolio.net/about.html</loc>
   </url>
-
   <url>
-    <loc>https://cravefolio.pages.dev/contact.html</loc>
+    <loc>https://cravefolio.net/contact.html</loc>
   </url>
-
   <url>
-    <loc>https://cravefolio.pages.dev/privacy.html</loc>
+    <loc>https://cravefolio.net/privacy.html</loc>
   </url>
-
   <url>
-    <loc>https://cravefolio.pages.dev/terms.html</loc>
+    <loc>https://cravefolio.net/terms.html</loc>
   </url>
-
   <url>
-    <loc>https://cravefolio.pages.dev/restaurants.html</loc>
+    <loc>https://cravefolio.net/restaurants.html</loc>
   </url>
-
   <url>
-    <loc>https://cravefolio.pages.dev/rewards.html</loc>
+    <loc>https://cravefolio.net/rewards.html</loc>
   </url>
-    
-  <url>
-    <loc>https://cravefolio.pages.dev/email-demo.html</loc>
-  </url>
-  
-  <url>
-    <loc>https://cravefolio.pages.dev/inbox.html</loc>
-  </url>
-
 </urlset>
