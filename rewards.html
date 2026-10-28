@@ -92,7 +92,7 @@ footer p{color:#c9dfd0;margin-top:18px}
 .copy-address{background:var(--yellow);color:#173c2d;border:0;border-radius:9px;padding:11px 15px;font-weight:800;cursor:pointer}
 .reward-disclaimer{border-top:1px solid var(--border);padding-top:12px;margin-top:17px!important;font-size:12px!important;line-height:1.6!important}
 
-/* Beta 1 management controls */
+/* Reward management controls */
 .reward-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}
 .reward-action{border:1px solid var(--green);border-radius:9px;background:white;color:var(--green);padding:10px 14px;font-weight:800;cursor:pointer}
 .reward-action.delete{border-color:#a53d30;color:#922f25}
@@ -103,10 +103,8 @@ footer p{color:#c9dfd0;margin-top:18px}
 .reward-edit textarea{min-height:65px;resize:vertical}
 .reward-feedback{font-size:12px!important;font-weight:700}
 .reward-feedback.error{color:#922f25}
-button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--green);outline-offset:3px}
-[hidden]{display:none!important}
 
-
+/* General restaurant website button */
 .restaurant-website-link{
  display:flex;
  justify-content:center;
@@ -121,12 +119,11 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
  font-size:13px;
  font-weight:800;
 }
+.restaurant-website-link:hover{background:#0b6b4e}
 
-.restaurant-website-link:hover{
- background:#0b6b4e;
-}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--green);outline-offset:3px}
+[hidden]{display:none!important}
 
-  
 @media(max-width:800px){
 .connections,.reward-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
@@ -428,7 +425,7 @@ function restaurantWebsite(reward){
 
  return websites[name]||null;
 }
-  
+
 /* AUTHENTICATED REQUESTS */
 
 async function customerRequest(path,method='GET',payload){
@@ -657,92 +654,41 @@ function renderRewards(rewards){
    addText(card,'span','Expired','status');
   }
 
- 
-const redemptionUrl=safeRedemptionUrl(reward);
-const officialWebsite=restaurantWebsite(reward);
-const expired=reward.expirationState==='expired';
+  const redemptionUrl=safeRedemptionUrl(reward);
+  const officialWebsite=restaurantWebsite(reward);
+  const expired=reward.expirationState==='expired';
 
-if(redemptionUrl&&!expired){
+  if(redemptionUrl&&!expired){
 
- const link=document.createElement('a');
- link.className='redemption-link';
- link.href=redemptionUrl;
- link.target='_blank';
- link.rel='noopener noreferrer';
- link.textContent='Open Reward ↗';
- card.appendChild(link);
+   const link=document.createElement('a');
+   link.className='redemption-link';
+   link.href=redemptionUrl;
+   link.target='_blank';
+   link.rel='noopener noreferrer';
+   link.textContent='Open Reward ↗';
+   card.appendChild(link);
 
- addText(
-  card,
-  'p',
-  reward.redemption_type==='exact_offer'
-   ?'Opens the original offer destination. Restaurant login or eligibility may still be required.'
-   :'Opens the restaurant destination. You may need to find your offer after signing in.',
-  'redemption-note'
- );
-
-}else{
-
- addText(
-  card,
-  'div',
-  expired
-   ?'Reward expiration date has passed'
-   :'Verified redemption link unavailable',
-  'redemption-unavailable'
- );
-
- if(!expired){
-  const guidance=
-   typeof reward.redemption_guidance==='string'&&reward.redemption_guidance.trim()
-    ?reward.redemption_guidance.trim()
-    :(reward.restaurant==="McDonald's"&&reward.source==='forwarded-email'&&/free double cheeseburger/i.test(reward.reward||'')
-     ?"Check the McDonald's app for the original offer and eligibility."
-     :null);
-
-  if(guidance){
    addText(
     card,
     'p',
-    guidance+' This is guidance, not a verified redemption link.',
+    reward.redemption_type==='exact_offer'
+     ?'Opens the original offer destination. Restaurant login or eligibility may still be required.'
+     :'Opens the restaurant destination. You may need to find your offer after signing in.',
     'redemption-note'
    );
-  }
- }
-}
 
-/* Every reward receives a general destination button. */
+  }else{
 
-const websiteLink=document.createElement('a');
-websiteLink.className='restaurant-website-link';
+   addText(
+    card,
+    'div',
+    expired
+     ?'Reward expiration date has passed'
+     :'Verified redemption link unavailable',
+    'redemption-unavailable'
+   );
 
-if(officialWebsite){
- websiteLink.href=officialWebsite;
- websiteLink.target='_blank';
- websiteLink.rel='noopener noreferrer';
-
- websiteLink.textContent=redemptionUrl&&!expired
-  ?'Restaurant Website ↗'
-  :'Visit Restaurant Website ↗';
-
-}else{
- websiteLink.href='/restaurants.html';
- websiteLink.textContent='Find Restaurant →';
-}
-
-card.appendChild(websiteLink);
-
-addText(
- card,
- 'p',
- officialWebsite
-  ?'General restaurant website. This button does not guarantee that the specific reward is available or redeemable.'
-  :'The official website for this restaurant has not been identified.',
- 'redemption-note'
-);
-
-
-   if(reward.expirationState!=='expired'){
+   if(!expired){
     const guidance=
      typeof reward.redemption_guidance==='string'&&reward.redemption_guidance.trim()
       ?reward.redemption_guidance.trim()
@@ -760,6 +706,36 @@ addText(
     }
    }
   }
+
+  /* Every reward also receives a general destination button. */
+
+  const websiteLink=document.createElement('a');
+  websiteLink.className='restaurant-website-link';
+
+  if(officialWebsite){
+   websiteLink.href=officialWebsite;
+   websiteLink.target='_blank';
+   websiteLink.rel='noopener noreferrer';
+
+   websiteLink.textContent=redemptionUrl&&!expired
+    ?'Restaurant Website ↗'
+    :'Visit Restaurant Website ↗';
+
+  }else{
+   websiteLink.href='/restaurants.html';
+   websiteLink.textContent='Find Restaurant →';
+  }
+
+  card.appendChild(websiteLink);
+
+  addText(
+   card,
+   'p',
+   officialWebsite
+    ?'General restaurant website. This button does not guarantee that the specific reward is available or redeemable.'
+    :'The official website for this restaurant has not been identified.',
+   'redemption-note'
+  );
 
   addText(
    card,
