@@ -4,315 +4,304 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Restaurant Rewards Directory | Cravefolio</title>
   <meta name="description" content="Explore popular restaurant loyalty programs in one convenient directory. Find official rewards programs from McDonald's, Starbucks, Chipotle, and more.">
-
   <link rel="icon" type="image/x-icon" sizes="any" href="/favicon.ico?v=2">
 
   <style>
     :root {
-      --green: #07543d;
-      --cream: #faf8ef;
-      --yellow: #ffc642;
-      --sage: #e8efdf;
-      --muted: #5c7568;
-      --border: #e1e6d9;
+      --green:#07543d;
+      --cream:#faf8ef;
+      --yellow:#ffc642;
+      --sage:#e8efdf;
+      --muted:#5c7568;
+      --border:#e1e6d9;
     }
 
-    * {
-      box-sizing: border-box;
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      background:var(--cream);
+      color:var(--green);
+      font-family:Arial,Helvetica,sans-serif;
     }
 
-    body {
-      margin: 0;
-      background: var(--cream);
-      color: var(--green);
-      font-family: Arial, Helvetica, sans-serif;
+    a{color:inherit}
+
+    header{
+      background:#fffdf7;
+      border-bottom:1px solid var(--border);
     }
 
-    a {
-      color: inherit;
+    .nav{
+      max-width:1150px;
+      margin:auto;
+      padding:19px 24px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:20px;
     }
 
-    header {
-      background: #fffdf7;
-      border-bottom: 1px solid var(--border);
+    .logo{
+      text-decoration:none;
+      font-size:25px;
+      font-weight:800;
+      letter-spacing:-1px;
     }
 
-    .nav {
-      max-width: 1150px;
-      margin: auto;
-      padding: 19px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 20px;
+    .logo span{color:#d99d00}
+
+    nav{
+      display:flex;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:22px;
     }
 
-    .logo {
-      text-decoration: none;
-      font-size: 25px;
-      font-weight: 800;
-      letter-spacing: -1px;
-    }
-
-    .logo span {
-      color: #d99d00;
-    }
-
-    nav {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 22px;
-    }
-
-    nav a {
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 700;
+    nav a{
+      text-decoration:none;
+      font-size:14px;
+      font-weight:700;
     }
 
     nav a:hover,
-    nav a.active {
-      color: #a57900;
+    nav a.active{color:#a57900}
+
+    .hero{
+      background:var(--green);
+      color:white;
+      padding:65px 24px;
+      text-align:center;
     }
 
-    .hero {
-      background: var(--green);
-      color: white;
-      padding: 65px 24px;
-      text-align: center;
+    .eyebrow{
+      color:var(--yellow);
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:2px;
     }
 
-    .eyebrow {
-      color: var(--yellow);
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 2px;
+    .hero h1{
+      font-family:Georgia,serif;
+      font-size:clamp(36px,6vw,56px);
+      margin:14px 0;
     }
 
-    .hero h1 {
-      font-family: Georgia, serif;
-      font-size: clamp(36px, 6vw, 56px);
-      margin: 14px 0;
+    .hero p{
+      max-width:600px;
+      margin:auto;
+      color:#e0eadf;
+      line-height:1.7;
     }
 
-    .hero p {
-      max-width: 600px;
-      margin: auto;
-      color: #e0eadf;
-      line-height: 1.7;
+    main{
+      max-width:1150px;
+      margin:auto;
+      padding:42px 24px 75px;
     }
 
-    main {
-      max-width: 1150px;
-      margin: auto;
-      padding: 42px 24px 75px;
+    .notice{
+      padding:17px 20px;
+      background:var(--sage);
+      border:1px solid #cfdcc4;
+      border-radius:13px;
+      font-size:13px;
+      line-height:1.7;
+      margin-bottom:30px;
     }
 
-    .notice {
-      padding: 17px 20px;
-      background: var(--sage);
-      border: 1px solid #cfdcc4;
-      border-radius: 13px;
-      font-size: 13px;
-      line-height: 1.7;
-      margin-bottom: 30px;
+    .tools{
+      display:flex;
+      gap:14px;
+      margin-bottom:17px;
     }
 
-    .tools {
-      display: flex;
-      gap: 14px;
-      margin-bottom: 17px;
+    .search{flex:1}
+
+    input,select{
+      width:100%;
+      padding:16px;
+      border:1px solid #d3ddce;
+      background:white;
+      border-radius:12px;
+      font-size:15px;
+      color:var(--green);
+      outline:none;
     }
 
-    .search {
-      flex: 1;
+    input:focus,select:focus{
+      border-color:var(--green);
+      box-shadow:0 0 0 2px #b8d4b8;
     }
 
-    input,
-    select {
-      width: 100%;
-      padding: 16px;
-      border: 1px solid #d3ddce;
-      background: white;
-      border-radius: 12px;
-      font-size: 15px;
-      color: var(--green);
-      outline: none;
+    .filter{width:210px}
+
+    .count{
+      font-size:13px;
+      color:var(--muted);
+      margin-bottom:20px;
     }
 
-    input:focus,
-    select:focus {
-      border-color: var(--green);
-      box-shadow: 0 0 0 2px #b8d4b8;
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:18px;
     }
 
-    .filter {
-      width: 210px;
+    .card{
+      display:flex;
+      background:white;
+      border:1px solid var(--border);
+      border-radius:16px;
+      overflow:hidden;
+      transition:transform .2s,box-shadow .2s;
     }
 
-    .count {
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 20px;
+    .card:hover{
+      transform:translateY(-3px);
+      box-shadow:0 8px 24px rgba(7,84,61,.09);
     }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
+    .art{
+      width:105px;
+      flex-shrink:0;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(145deg,#e1edcf,#fff0bf);
+      font-size:42px;
     }
 
-    .card {
-      display: flex;
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      overflow: hidden;
-      transition: transform .2s, box-shadow .2s;
+    .content{
+      flex:1;
+      min-width:0;
+      padding:20px;
     }
 
-    .card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 24px rgba(7,84,61,.09);
+    .category{
+      font-size:10px;
+      letter-spacing:1px;
+      font-weight:800;
+      text-transform:uppercase;
+      color:#648b5b;
     }
 
-    .art {
-      width: 105px;
-      flex-shrink: 0;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(145deg, #e1edcf, #fff0bf);
-      font-size: 42px;
+    .content h2{
+      font-family:Georgia,serif;
+      font-size:24px;
+      margin:7px 0 9px;
     }
 
-    .content {
-      flex: 1;
-      min-width: 0;
-      padding: 20px;
+    .program{
+      font-size:13px;
+      font-weight:800;
     }
 
-    .category {
-      font-size: 10px;
-      letter-spacing: 1px;
-      font-weight: 800;
-      text-transform: uppercase;
-      color: #648b5b;
+    .content p{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.6;
+      min-height:42px;
+      margin:10px 0 18px;
     }
 
-    .content h2 {
-      font-family: Georgia, serif;
-      font-size: 24px;
-      margin: 7px 0 9px;
+    .bottom{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:10px;
     }
 
-    .program {
-      font-size: 13px;
-      font-weight: 800;
+    .links{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
     }
 
-    .content p {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.6;
-      min-height: 42px;
-      margin: 10px 0 18px;
+    .visit,.my-rewards{
+      display:inline-block;
+      padding:10px 13px;
+      border-radius:9px;
+      font-size:12px;
+      font-weight:800;
+      text-decoration:none;
     }
 
-    .bottom {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
+    .visit{
+      background:var(--yellow);
+      color:#173c2d;
     }
 
-    .visit {
-      display: inline-block;
-      background: var(--yellow);
-      color: #173c2d;
-      padding: 10px 13px;
-      border-radius: 9px;
-      font-size: 12px;
-      font-weight: 800;
-      text-decoration: none;
+    .visit:hover{background:#f2b923}
+
+    .my-rewards{
+      background:var(--green);
+      color:white;
     }
 
-    .visit:hover {
-      background: #f2b923;
+    .my-rewards:hover{background:#0b6b4e}
+
+    .status{
+      font-size:10px;
+      font-weight:700;
+      color:#806222;
+      background:#fff3d0;
+      border-radius:20px;
+      padding:7px 9px;
     }
 
-    .status {
-      font-size: 10px;
-      font-weight: 700;
-      color: #806222;
-      background: #fff3d0;
-      border-radius: 20px;
-      padding: 7px 9px;
+    .status.supported{
+      color:#07543d;
+      background:var(--sage);
     }
 
-    .empty {
-      display: none;
-      text-align: center;
-      padding: 45px;
-      background: var(--sage);
-      border-radius: 14px;
-      color: var(--muted);
+    .empty{
+      display:none;
+      text-align:center;
+      padding:45px;
+      background:var(--sage);
+      border-radius:14px;
+      color:var(--muted);
     }
 
-    footer {
-      background: var(--green);
-      color: white;
-      text-align: center;
-      padding: 30px 20px;
-      font-size: 12px;
+    footer{
+      background:var(--green);
+      color:white;
+      text-align:center;
+      padding:30px 20px;
+      font-size:12px;
     }
 
-    footer a {
-      color: white;
-      margin: 0 9px;
-      text-decoration: none;
+    footer a{
+      color:white;
+      margin:0 9px;
+      text-decoration:none;
     }
 
-    footer p {
-      color: #c9dfd0;
-      margin-top: 18px;
+    footer p{
+      color:#c9dfd0;
+      margin-top:18px;
     }
 
-    @media (max-width: 750px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
+    a:focus-visible{
+      outline:3px solid var(--green);
+      outline-offset:3px;
     }
 
-    @media (max-width: 480px) {
-      .nav {
-        flex-direction: column;
-      }
+    @media(max-width:750px){
+      .grid{grid-template-columns:1fr}
+    }
 
-      .tools {
-        flex-direction: column;
-      }
-
-      .filter {
-        width: 100%;
-      }
-
-      .art {
-        width: 76px;
-        font-size: 31px;
-      }
-
-      .content {
-        padding: 15px;
-      }
-
-      .content h2 {
-        font-size: 21px;
-      }
+    @media(max-width:480px){
+      .nav{flex-direction:column}
+      .tools{flex-direction:column}
+      .filter{width:100%}
+      .art{width:76px;font-size:31px}
+      .content{padding:15px}
+      .content h2{font-size:21px}
     }
   </style>
 </head>
@@ -326,6 +315,8 @@
     <nav aria-label="Main navigation">
       <a href="/">Home</a>
       <a class="active" href="/restaurants.html" aria-current="page">Restaurants</a>
+      <a href="/rewards.html">Rewards</a>
+      <a href="/account.html">My Account</a>
       <a href="/about.html">About</a>
       <a href="/contact.html">Contact</a>
     </nav>
@@ -334,9 +325,7 @@
 
 <section class="hero">
   <div class="eyebrow">EXPLORE THE PERKS</div>
-
   <h1>Restaurant Directory</h1>
-
   <p>
     Your favorite restaurants. Their rewards programs.
     One convenient place to discover them.
@@ -347,10 +336,12 @@
 
   <div class="notice">
     <strong>We're building something delicious!</strong>
-    This directory helps you discover official restaurant loyalty
-    programs. Cravefolio does not currently connect to restaurant
-    accounts, retrieve points balances, or issue rewards.
-    Check each restaurant's website for current program details.
+    Explore official restaurant loyalty programs here.
+    For supported restaurants, Cravefolio can display reward information
+    saved from forwarded emails in your account.
+    Cravefolio does not directly connect to restaurant loyalty accounts,
+    verify live point balances, or issue restaurant rewards.
+    Always check the restaurant's official app or website for current details.
   </div>
 
   <div class="tools">
@@ -383,6 +374,7 @@
 
   <div class="grid" id="restaurantGrid">
 
+    <!-- McDonald's -->
     <article class="card" data-category="Burgers">
       <div class="art" aria-hidden="true">🍔</div>
       <div class="content">
@@ -390,13 +382,18 @@
         <h2>McDonald's</h2>
         <div class="program">MyMcDonald's Rewards</div>
         <p>Explore points, eligible menu rewards, and member offers.</p>
+
         <div class="bottom">
-          <a class="visit" href="https://www.mcdonalds.com/" target="_blank" rel="noopener noreferrer">Official Website ↗</a>
-          <span class="status">Not Connected</span>
+          <div class="links">
+            <a class="visit" href="https://www.mcdonalds.com/" target="_blank" rel="noopener noreferrer">Official Website ↗</a>
+            <a class="my-rewards" href="/restaurant.html?name=mcdonalds">My Rewards →</a>
+          </div>
+          <span class="status supported">Cravefolio Supported</span>
         </div>
       </div>
     </article>
 
+    <!-- Chick-fil-A -->
     <article class="card" data-category="Chicken">
       <div class="art" aria-hidden="true">🐔</div>
       <div class="content">
@@ -404,13 +401,17 @@
         <h2>Chick-fil-A</h2>
         <div class="program">Chick-fil-A One</div>
         <p>Discover membership tiers, points, and eligible rewards.</p>
+
         <div class="bottom">
-          <a class="visit" href="https://www.chick-fil-a.com/" target="_blank" rel="noopener noreferrer">Official Website ↗</a>
+          <div class="links">
+            <a class="visit" href="https://www.chick-fil-a.com/" target="_blank" rel="noopener noreferrer">Official Website ↗</a>
+          </div>
           <span class="status">Not Connected</span>
         </div>
       </div>
     </article>
 
+    <!-- Starbucks -->
     <article class="card" data-category="Coffee">
       <div class="art" aria-hidden="true">☕</div>
       <div class="content">
@@ -418,13 +419,18 @@
         <h2>Starbucks</h2>
         <div class="program">Starbucks Rewards</div>
         <p>Explore Stars, member benefits, and redemption options.</p>
+
         <div class="bottom">
-          <a class="visit" href="https://www.starbucks.com/" target="_blank" rel="noopener noreferrer">Official Website ↗</a>
-          <span class="status">Not Connected</span>
+          <div class="links">
+            <a class="visit" href="https://www.starbucks.com/" target="_blank" rel="noopener noreferrer">Official Website ↗</a>
+            <a class="my-rewards" href="/restaurant.html?name=starbucks">My Rewards →</a>
+          </div>
+          <span class="status supported">Cravefolio Supported</span>
         </div>
       </div>
     </article>
 
+    <!-- Taco Bell -->
     <article class="card" data-category="Mexican">
       <div class="art" aria-hidden="true">🌮</div>
       <div class="content">
@@ -432,13 +438,17 @@
         <h2>Taco Bell</h2>
         <div class="program">Taco Bell Rewards</div>
         <p>Find information about app-based points and rewards.</p>
+
         <div class="bottom">
-          <a class="visit" href="https://www.tacobell.com/" target="_blank" rel="noopener noreferrer">Official Website ↗</a>
+          <div class="links">
+            <a class="visit" href="https://www.tacobell.com/" target="_blank" rel="noopener noreferrer">Official Website ↗</a>
+          </div>
           <span class="status">Not Connected</span>
         </div>
       </div>
     </article>
 
+    <!-- Wendy's -->
     <article class="card" data-category="Burgers">
       <div class="art" aria-hidden="true">🍟</div>
       <div class="content">
@@ -446,13 +456,17 @@
         <h2>Wendy's</h2>
         <div class="program">Wendy's Rewards</div>
         <p>Discover the restaurant's loyalty program and offers.</p>
+
         <div class="bottom">
-          <a class="visit" href="https://www.wendys.com/" target="_blank" rel="noopener noreferrer">Official Website ↗</a>
+          <div class="links">
+            <a class="visit" href="https://www.wendys.com/" target="_blank" rel="noopener noreferrer">Official Website ↗</a>
+          </div>
           <span class="status">Not Connected</span>
         </div>
       </div>
     </article>
 
+    <!-- Chipotle -->
     <article class="card" data-category="Mexican">
       <div class="art" aria-hidden="true">🌯</div>
       <div class="content">
@@ -460,13 +474,18 @@
         <h2>Chipotle</h2>
         <div class="program">Chipotle Rewards</div>
         <p>Explore points and available redemption options.</p>
+
         <div class="bottom">
-          <a class="visit" href="https://www.chipotle.com/" target="_blank" rel="noopener noreferrer">Official Website ↗</a>
-          <span class="status">Not Connected</span>
+          <div class="links">
+            <a class="visit" href="https://www.chipotle.com/" target="_blank" rel="noopener noreferrer">Official Website ↗</a>
+            <a class="my-rewards" href="/restaurant.html?name=chipotle">My Rewards →</a>
+          </div>
+          <span class="status supported">Cravefolio Supported</span>
         </div>
       </div>
     </article>
 
+    <!-- Dunkin' -->
     <article class="card" data-category="Coffee">
       <div class="art" aria-hidden="true">🍩</div>
       <div class="content">
@@ -474,13 +493,17 @@
         <h2>Dunkin'</h2>
         <div class="program">Dunkin' Rewards</div>
         <p>Discover points, member perks, and redemption options.</p>
+
         <div class="bottom">
-          <a class="visit" href="https://www.dunkindonuts.com/" target="_blank" rel="noopener noreferrer">Official Website ↗</a>
+          <div class="links">
+            <a class="visit" href="https://www.dunkindonuts.com/" target="_blank" rel="noopener noreferrer">Official Website ↗</a>
+          </div>
           <span class="status">Not Connected</span>
         </div>
       </div>
     </article>
 
+    <!-- Domino's -->
     <article class="card" data-category="Pizza">
       <div class="art" aria-hidden="true">🍕</div>
       <div class="content">
@@ -488,13 +511,17 @@
         <h2>Domino's</h2>
         <div class="program">Domino's Rewards</div>
         <p>Explore points and eligible pizza rewards.</p>
+
         <div class="bottom">
-          <a class="visit" href="https://www.dominos.com/" target="_blank" rel="noopener noreferrer">Official Website ↗</a>
+          <div class="links">
+            <a class="visit" href="https://www.dominos.com/" target="_blank" rel="noopener noreferrer">Official Website ↗</a>
+          </div>
           <span class="status">Not Connected</span>
         </div>
       </div>
     </article>
 
+    <!-- Panera Bread -->
     <article class="card" data-category="Bakery">
       <div class="art" aria-hidden="true">🥖</div>
       <div class="content">
@@ -502,13 +529,18 @@
         <h2>Panera Bread</h2>
         <div class="program">MyPanera</div>
         <p>Discover personalized offers and membership benefits.</p>
+
         <div class="bottom">
-          <a class="visit" href="https://www.panerabread.com/" target="_blank" rel="noopener noreferrer">Official Website ↗</a>
-          <span class="status">Not Connected</span>
+          <div class="links">
+            <a class="visit" href="https://www.panerabread.com/" target="_blank" rel="noopener noreferrer">Official Website ↗</a>
+            <a class="my-rewards" href="/restaurant.html?name=panera">My Rewards →</a>
+          </div>
+          <span class="status supported">Cravefolio Supported</span>
         </div>
       </div>
     </article>
 
+    <!-- Burger King -->
     <article class="card" data-category="Burgers">
       <div class="art" aria-hidden="true">👑</div>
       <div class="content">
@@ -516,8 +548,11 @@
         <h2>Burger King</h2>
         <div class="program">Royal Perks</div>
         <p>Explore Crowns, member offers, and eligible rewards.</p>
+
         <div class="bottom">
-          <a class="visit" href="https://www.bk.com/" target="_blank" rel="noopener noreferrer">Official Website ↗</a>
+          <div class="links">
+            <a class="visit" href="https://www.bk.com/" target="_blank" rel="noopener noreferrer">Official Website ↗</a>
+          </div>
           <span class="status">Not Connected</span>
         </div>
       </div>
@@ -539,51 +574,37 @@
     <a href="/privacy.html">Privacy</a>
     <a href="/terms.html">Terms</a>
   </div>
-
   <p>© 2026 Cravefolio. Your rewards, served.</p>
 </footer>
 
 <script>
-  const search = document.getElementById("search");
-  const filter = document.getElementById("filter");
-  const cards = document.querySelectorAll(".card");
-  const count = document.getElementById("count");
-  const empty = document.getElementById("empty");
+  const search=document.getElementById('search');
+  const filter=document.getElementById('filter');
+  const cards=document.querySelectorAll('.card');
+  const count=document.getElementById('count');
+  const empty=document.getElementById('empty');
 
-  function filterRestaurants() {
-    const query = search.value.trim().toLowerCase();
-    const selectedCategory = filter.value;
+  function filterRestaurants(){
+    const query=search.value.trim().toLowerCase();
+    const selectedCategory=filter.value;
+    let visible=0;
 
-    let visible = 0;
+    cards.forEach(card=>{
+      const matchesSearch=card.textContent.toLowerCase().includes(query);
+      const matchesCategory=selectedCategory==='all'||card.dataset.category===selectedCategory;
+      const shouldShow=matchesSearch&&matchesCategory;
 
-    cards.forEach(card => {
-      const restaurantText = card.textContent.toLowerCase();
-      const category = card.dataset.category;
+      card.style.display=shouldShow?'flex':'none';
 
-      const matchesSearch = restaurantText.includes(query);
-
-      const matchesCategory =
-        selectedCategory === "all" ||
-        category === selectedCategory;
-
-      const shouldShow = matchesSearch && matchesCategory;
-
-      card.style.display = shouldShow ? "flex" : "none";
-
-      if (shouldShow) {
-        visible++;
-      }
+      if(shouldShow)visible++;
     });
 
-    count.textContent =
-      "Showing " + visible + " restaurant" +
-      (visible === 1 ? "" : "s");
-
-    empty.style.display = visible === 0 ? "block" : "none";
+    count.textContent='Showing '+visible+' restaurant'+(visible===1?'':'s');
+    empty.style.display=visible===0?'block':'none';
   }
 
-  search.addEventListener("input", filterRestaurants);
-  filter.addEventListener("change", filterRestaurants);
+  search.addEventListener('input',filterRestaurants);
+  filter.addEventListener('change',filterRestaurants);
 </script>
 
 </body>
