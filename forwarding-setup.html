@@ -5,55 +5,180 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>One-Time Sync | Cravefolio</title>
+
 <style>
-:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#183c32;background:#faf9ee}
+:root{
+ font-family:system-ui,-apple-system,Segoe UI,sans-serif;
+ color:#183c32;
+ background:#faf9ee;
+}
 *{box-sizing:border-box}
 body{margin:0}
-header{background:#184f3d;color:white;padding:20px max(20px,calc((100vw - 760px)/2))}
-header a{color:white;text-decoration:none;font-weight:750}
-main{max-width:760px;margin:44px auto;padding:0 20px}
-section{background:white;border:1px solid #dbe5d8;border-radius:18px;padding:28px;box-shadow:0 5px 24px #173e3010}
-h1{margin:0 0 12px;font-size:clamp(1.6rem,4vw,2.3rem)}
-h2{font-size:1.25rem;margin-top:28px}
+header{
+ background:#184f3d;
+ color:white;
+ padding:20px max(20px,calc((100vw - 760px)/2));
+}
+header a{
+ color:white;
+ text-decoration:none;
+ font-weight:750;
+}
+main{
+ max-width:760px;
+ margin:44px auto;
+ padding:0 20px;
+}
+section{
+ background:white;
+ border:1px solid #dbe5d8;
+ border-radius:18px;
+ padding:28px;
+ box-shadow:0 5px 24px #173e3010;
+}
+h1{
+ margin:0 0 12px;
+ font-size:clamp(1.6rem,4vw,2.3rem);
+}
+h2{
+ font-size:1.25rem;
+ margin-top:28px;
+}
 p,li{line-height:1.6}
-button{border:0;background:#1c6849;color:white;padding:13px 20px;border-radius:10px;font:inherit;font-weight:700;cursor:pointer}
-button:disabled{opacity:.55;cursor:not-allowed}
-.secondary{background:#e5f0e6;color:#164733}
-#address,.code{overflow-wrap:anywhere;background:#f0f5ec;padding:16px;border-radius:10px;font-weight:700;margin:18px 0}
+button{
+ border:0;
+ background:#1c6849;
+ color:white;
+ padding:13px 20px;
+ border-radius:10px;
+ font:inherit;
+ font-weight:700;
+ cursor:pointer;
+}
+button:disabled{
+ opacity:.55;
+ cursor:not-allowed;
+}
+.secondary{
+ background:#e5f0e6;
+ color:#164733;
+}
+#address,.code{
+ overflow-wrap:anywhere;
+ background:#f0f5ec;
+ padding:16px;
+ border-radius:10px;
+ font-weight:700;
+ margin:18px 0;
+}
 #status,#verification-status{min-height:24px}
 .error{color:#a32828}
-.muted{color:#52695d;font-size:.94rem}
+.muted{
+ color:#52695d;
+ font-size:.94rem;
+}
 nav{margin-top:22px}
-nav a{color:#1c6849;margin-right:18px}
+nav a{
+ color:#1c6849;
+ margin-right:18px;
+}
 [hidden]{display:none!important}
-a{color:#1c6849;overflow-wrap:anywhere}
+a{
+ color:#1c6849;
+ overflow-wrap:anywhere;
+}
 
-/* Beta 2 additions */
-.beta-label{display:inline-block;background:#fff0bb;color:#665014;padding:6px 12px;border-radius:30px;font-size:.8rem;font-weight:800;margin-bottom:14px}
-.setup-box{background:#fafcf7;border:1px solid #dbe5d8;border-radius:14px;padding:20px;margin-top:24px}
+/* Beta 2 */
+.beta-label{
+ display:inline-block;
+ background:#fff0bb;
+ color:#665014;
+ padding:6px 12px;
+ border-radius:30px;
+ font-size:.8rem;
+ font-weight:800;
+ margin-bottom:14px;
+}
+.setup-box{
+ background:#fafcf7;
+ border:1px solid #dbe5d8;
+ border-radius:14px;
+ padding:20px;
+ margin-top:24px;
+}
 .setup-box h2{margin-top:0}
-textarea{display:block;width:100%;min-height:110px;padding:13px;border:1px solid #b8cdbd;border-radius:10px;font:inherit;color:#183c32;background:white;resize:vertical;margin:12px 0}
-textarea:focus{outline:2px solid #1c6849;outline-offset:2px}
-.filter-output{background:#f0f5ec;padding:16px;border-radius:10px;overflow-wrap:anywhere;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.9rem;margin:14px 0}
-.button-row{display:flex;gap:10px;flex-wrap:wrap}
-.notice{background:#fff8de;border-left:4px solid #d4a52c;padding:13px 16px;border-radius:7px;margin:18px 0}
+.notice{
+ background:#fff8de;
+ border-left:4px solid #d4a52c;
+ padding:13px 16px;
+ border-radius:7px;
+ margin:18px 0;
+}
+.filter-output{
+ background:#f0f5ec;
+ padding:16px;
+ border-radius:10px;
+ overflow-wrap:anywhere;
+ white-space:pre-wrap;
+ font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+ font-size:.9rem;
+ margin:14px 0;
+}
+.restaurant-list{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:10px;
+ margin:18px 0;
+}
+.restaurant-item{
+ background:white;
+ border:1px solid #dbe5d8;
+ padding:12px;
+ border-radius:10px;
+}
+.restaurant-item strong{
+ display:block;
+ margin-bottom:5px;
+}
+.restaurant-item small{
+ color:#52695d;
+ overflow-wrap:anywhere;
+}
+.tag{
+ display:inline-block;
+ margin-top:8px;
+ padding:4px 8px;
+ background:#e5f0e6;
+ color:#164733;
+ border-radius:20px;
+ font-size:.75rem;
+ font-weight:750;
+}
+.tag.provisional{
+ background:#fff0bb;
+ color:#665014;
+}
 .success{color:#176340}
-.small-heading{font-size:.9rem;font-weight:800;margin-bottom:6px}
 @media(max-width:520px){
-section{padding:20px}
-button{width:100%}
-.button-row{flex-direction:column}
+ section{padding:20px}
+ button{width:100%}
+ .restaurant-list{grid-template-columns:1fr}
 }
 </style>
 </head>
 
 <body>
-<header><a href="/">Cravefolio</a></header>
+
+<header>
+<a href="/">Cravefolio</a>
+</header>
 
 <main>
 <section>
 
-<div class="beta-label">BETA 2 · ONE-TIME SYNC</div>
+<div class="beta-label">
+BETA 2 · ONE-TIME SYNC
+</div>
 
 <h1>Set up automatic rewards emails</h1>
 
@@ -63,7 +188,7 @@ address and one combined Gmail filter.
 </p>
 
 <p>
-Once configured, matching new restaurant emails can be
+After setup, matching new restaurant emails can be
 forwarded to Cravefolio automatically.
 </p>
 
@@ -88,8 +213,7 @@ Copy address
 <p class="muted">
 Keep this address private. Only forward restaurant reward
 messages you want Cravefolio to process. Some email formats
-and offers may not be recognized yet; check your dashboard
-after forwarding.
+and offers may not be recognized yet.
 </p>
 
 <div class="setup-box">
@@ -97,24 +221,27 @@ after forwarding.
 <h2>Step 2 — Verify your address with Gmail</h2>
 
 <ol>
+<li>Open Gmail in a desktop browser.</li>
+
 <li>
-Open Gmail in a desktop browser.
+Go to Settings → See all settings →
+Forwarding and POP/IMAP.
 </li>
-<li>
-Go to Settings → See all settings → Forwarding and POP/IMAP.
-</li>
+
 <li>
 Choose Add a forwarding address and paste your private
 Cravefolio address.
 </li>
+
 <li>
 Confirm Gmail's prompts. Gmail should send a verification
 message to Cravefolio.
 </li>
+
 <li>
-Click Check for verification below. It may take a little time
-for the message to arrive.
+Click Check for verification below.
 </li>
+
 <li>
 Use the confirmation code or link to complete Gmail's
 verification. Only proceed if you requested it yourself.
@@ -158,62 +285,26 @@ Open Gmail confirmation link
 <p class="muted" id="received"></p>
 
 </div>
-
 </div>
 
 <div class="setup-box">
 
-<h2>Step 3 — Create your combined Gmail filter</h2>
+<h2>Step 3 — Copy your combined Gmail filter</h2>
 
 <p>
-Instead of creating a separate forwarding rule for every
-restaurant, combine their verified sender addresses into
-one Gmail filter.
+Your filter is already prepared for all ten restaurants
+in the Cravefolio directory.
 </p>
 
-<div class="notice">
-<strong>Sender directory preparation:</strong>
-Cravefolio's verified restaurant sender list is still being
-assembled. Until it is published, add only restaurant sender
-addresses you have confirmed from genuine emails in your inbox.
-Do not guess addresses.
-</div>
-
-<label for="sender-list" class="small-heading">
-Verified restaurant sender addresses
-</label>
-
-<p class="muted">
-Enter one email address per line. You can also separate
-addresses with commas. The generator removes duplicates.
+<p>
+Eight restaurants use the exact sender addresses supplied
+for testing. Dunkin' and Domino's use broader provisional
+domain matching.
 </p>
 
-<textarea
-id="sender-list"
-placeholder="Enter verified restaurant sender email addresses here"
-spellcheck="false"
-autocomplete="off"
-></textarea>
+<div id="restaurant-list" class="restaurant-list"></div>
 
-<div class="button-row">
-<button id="generate-filter" type="button">
-Generate Gmail Filter
-</button>
-
-<button id="clear-senders" class="secondary" type="button">
-Clear list
-</button>
-</div>
-
-<p id="filter-status" role="status" aria-live="polite" class="muted">
-Enter your verified sender addresses to generate the filter.
-</p>
-
-<div id="filter-result" hidden>
-
-<p class="small-heading">
-Your combined Gmail filter
-</p>
+<p><strong>Your combined Gmail filter:</strong></p>
 
 <div id="filter-output" class="filter-output"></div>
 
@@ -221,11 +312,16 @@ Your combined Gmail filter
 Copy Gmail Filter
 </button>
 
-<p class="muted">
-Copy this expression into Gmail's <strong>From</strong>
-filter field.
+<p id="filter-status" role="status" aria-live="polite" class="muted">
+Ready to copy.
 </p>
 
+<div class="notice">
+<strong>Important:</strong>
+This filter is intended for testing. Sender addresses and
+domains can change, and not every restaurant email is
+necessarily a rewards email. Provisional domain matching
+may also capture general promotional messages.
 </div>
 
 </div>
@@ -235,51 +331,86 @@ filter field.
 <h2>Step 4 — Activate One-Time Sync</h2>
 
 <ol>
+
 <li>
-In Gmail, click the search options icon beside the search bar.
+Click Copy Gmail Filter above.
 </li>
 
 <li>
-Paste your generated filter into the <strong>From</strong>
-field.
+Open Gmail and paste the expression into Gmail's main
+search bar. Run the search and review the matching messages.
 </li>
 
 <li>
-Click <strong>Create filter</strong>.
+Open Gmail's advanced search options.
 </li>
 
 <li>
-Select <strong>Forward it to</strong>.
+Paste the same complete expression into the
+<strong>Has the words</strong> field.
+Leave the From field empty.
 </li>
 
 <li>
-Choose your verified private Cravefolio forwarding address.
+Click Create filter. Gmail may display a warning about
+search criteria; review it before continuing.
 </li>
 
 <li>
-Click <strong>Create filter</strong> to save.
+Select <strong>Forward it to</strong> and choose your
+verified private Cravefolio address.
 </li>
+
+<li>
+Save the filter.
+</li>
+
 </ol>
 
 <div class="notice">
 <strong>Privacy reminder:</strong>
-Do not enable Gmail's general forwarding option for all
-incoming mail. Only forward messages matching your
-restaurant filter.
+Do not enable general forwarding for all incoming Gmail
+messages. Only forward emails matching your restaurant filter.
 </div>
 
 <p class="muted">
-Cravefolio cannot independently confirm that you finished
-Gmail's filter setup. After activating it, send or receive
-a supported restaurant rewards email and check your dashboard.
-The filter applies to matching new incoming emails; it does
-not automatically import your entire email history.
+Cravefolio cannot independently confirm whether you
+completed Gmail's filter setup. The filter applies to
+matching new incoming emails; it does not automatically
+import your entire email history.
 </p>
 
-<a href="https://mail.google.com/mail/u/0/#settings/filters"
-target="_blank" rel="noopener noreferrer">
+<a
+href="https://mail.google.com/mail/u/0/#settings/filters"
+target="_blank"
+rel="noopener noreferrer">
 Open Gmail filter settings ↗
 </a>
+
+</div>
+
+<div class="setup-box">
+
+<h2>Step 5 — Test your connection</h2>
+
+<p>
+After activating your filter, wait for a matching restaurant
+email or send a supported restaurant rewards message through
+your forwarding setup.
+</p>
+
+<p>
+Then open My rewards to see whether Cravefolio successfully
+processed it.
+</p>
+
+<p class="muted">
+Matching and forwarding an email does not guarantee its
+reward details can be extracted. Additional restaurant
+email formats will be supported as parsing is tested.
+</p>
+
+<a href="/rewards.html">Check My rewards ↗</a>
 
 </div>
 
@@ -288,15 +419,14 @@ Open Gmail filter settings ↗
 <h2>Adding more restaurants later</h2>
 
 <p>
-When Cravefolio publishes additional verified restaurant
-senders, you can update your existing Gmail filter rather
-than creating another forwarding destination.
+When Cravefolio adds or updates restaurant senders,
+you can copy the revised filter and update your existing
+Gmail rule.
 </p>
 
 <p class="muted">
-The combined filter must include each supported sender you
-want to forward. Newly added restaurants are not automatically
-included in an already-saved Gmail filter.
+Gmail filters cannot be changed remotely by Cravefolio
+without additional Google authorization.
 </p>
 
 </div>
@@ -313,6 +443,8 @@ included in an already-saved Gmail filter.
 </main>
 
 <script type="module">
+
+/* Existing Beta 1 functionality */
 
 const status=document.getElementById('status'),
 create=document.getElementById('create'),
@@ -590,142 +722,164 @@ document.getElementById('copy-code')
 
 });
 
-/* Beta 2: combined Gmail filter generator */
+/* Beta 2: restaurant sender directory */
 
-const senderList=document.getElementById('sender-list');
-const generateFilter=document.getElementById('generate-filter');
-const clearSenders=document.getElementById('clear-senders');
-const filterStatus=document.getElementById('filter-status');
-const filterResult=document.getElementById('filter-result');
-const filterOutput=document.getElementById('filter-output');
-const copyFilter=document.getElementById('copy-filter');
+const restaurantSenders=[
 
-function parseSenders(value){
+ {
+  name:"McDonald's",
+  sender:"McDonalds@m.mcdonalds.com",
+  type:"exact"
+ },
 
- const entries=value
-  .split(/[\n,;]+/)
-  .map(item=>item.trim().toLowerCase())
-  .filter(Boolean);
+ {
+  name:"Chick-fil-A",
+  sender:"one@email.chick-fil-a.com",
+  type:"exact"
+ },
 
- const valid=[];
- const invalid=[];
+ {
+  name:"Starbucks",
+  sender:"Starbucks@e.starbucks.com",
+  type:"exact"
+ },
 
- const emailPattern=/^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$/i;
+ {
+  name:"Taco Bell",
+  sender:"bellbuzz@email.tacobell.com",
+  type:"exact"
+ },
 
- for(const entry of entries){
+ {
+  name:"Wendy's",
+  sender:"mywendys@email.wendys.com",
+  type:"exact"
+ },
 
-  if(!emailPattern.test(entry)||/[\s{}()]/.test(entry)){
+ {
+  name:"Chipotle",
+  sender:"chipotle@email.chipotle.com",
+  type:"exact"
+ },
 
-   invalid.push(entry);
+ {
+  name:"Dunkin'",
+  sender:"@dunkindonuts.com",
+  type:"provisional"
+ },
 
-  }else if(!valid.includes(entry)){
+ {
+  name:"Domino's",
+  sender:"@dominos.com",
+  type:"provisional"
+ },
 
-   valid.push(entry);
+ {
+  name:"Panera Bread",
+  sender:"panera@m1.panerabread.com",
+  type:"exact"
+ },
 
-  }
-
+ {
+  name:"Burger King",
+  sender:"promos-coming@your-way.bk.com",
+  type:"exact"
  }
 
- return {valid,invalid};
+];
+
+const restaurantList=
+ document.getElementById('restaurant-list');
+
+const filterOutput=
+ document.getElementById('filter-output');
+
+const copyFilter=
+ document.getElementById('copy-filter');
+
+const filterStatus=
+ document.getElementById('filter-status');
+
+/* Display the ten restaurant entries */
+
+for(const restaurant of restaurantSenders){
+
+ const item=document.createElement('div');
+ item.className='restaurant-item';
+
+ const name=document.createElement('strong');
+ name.textContent=restaurant.name;
+
+ const sender=document.createElement('small');
+ sender.textContent=restaurant.sender;
+
+ const tag=document.createElement('span');
+
+ tag.className=
+  'tag'+(
+   restaurant.type==='provisional'
+    ?' provisional'
+    :''
+  );
+
+ tag.textContent=
+  restaurant.type==='provisional'
+   ?'Provisional domain'
+   :'Supplied exact sender';
+
+ item.append(name,sender,document.createElement('br'),tag);
+
+ restaurantList.appendChild(item);
 
 }
 
-function resetFilter(){
+/*
+ Generate a single Gmail search expression.
 
- filterResult.hidden=true;
- filterOutput.textContent='';
- copyFilter.textContent='Copy Gmail Filter';
+ Exact senders are matched individually.
+ The final two use provisional domain matching.
 
-}
+ The braces group the alternatives with OR behavior.
+*/
 
-senderList.addEventListener('input',()=>{
+const gmailFilter='{'+restaurantSenders.map(restaurant=>{
 
- resetFilter();
+ if(restaurant.type==='provisional'){
 
- filterStatus.textContent=
-  'Generate the filter after updating your sender list.';
-
- filterStatus.className='muted';
-
-});
-
-generateFilter.addEventListener('click',()=>{
-
- resetFilter();
-
- const {valid,invalid}=parseSenders(senderList.value);
-
- if(invalid.length){
-
-  filterStatus.textContent=
-   'Please correct these invalid email addresses: '+
-   invalid.join(', ');
-
-  filterStatus.className='error';
-
-  return;
+  return 'from:('+restaurant.sender+')';
 
  }
 
- if(!valid.length){
+ return 'from:'+restaurant.sender;
 
-  filterStatus.textContent=
-   'Add at least one verified restaurant sender email address.';
+}).join(' ')+'}';
 
-  filterStatus.className='error';
+filterOutput.textContent=gmailFilter;
 
-  return;
-
- }
-
- /*
- Gmail supports grouping alternative search terms
- inside braces. Each term is scoped to its sender.
- */
-
- const expression=
-  '{'+valid.map(email=>'from:'+email).join(' ')+'}';
-
- filterOutput.textContent=expression;
- filterResult.hidden=false;
-
- filterStatus.textContent=
-  'Filter generated for '+valid.length+
-  ' unique sender'+(valid.length===1?'':'s')+'.';
-
- filterStatus.className='success';
-
-});
-
-clearSenders.addEventListener('click',()=>{
-
- senderList.value='';
- resetFilter();
-
- filterStatus.textContent=
-  'Sender list cleared.';
-
- filterStatus.className='muted';
-
-});
+/* Copy the complete filter */
 
 copyFilter.addEventListener('click',async()=>{
 
- const expression=filterOutput.textContent;
-
- if(!expression)
-  return;
-
  try{
 
-  await navigator.clipboard.writeText(expression);
+  await navigator.clipboard.writeText(gmailFilter);
 
   copyFilter.textContent='Copied!';
+
+  filterStatus.textContent=
+   'Combined filter copied. Paste it into Gmail.';
+
+  filterStatus.className='success';
 
  }catch{
 
   copyFilter.textContent=
    'Select and copy the filter above';
+
+  filterStatus.textContent=
+   'Clipboard access was unavailable. Select the expression above and copy it manually.';
+
+  filterStatus.className='error';
 
  }
 
