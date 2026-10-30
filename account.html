@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -5,45 +6,148 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Account | Cravefolio</title>
 <link rel="icon" href="/favicon.ico">
+
 <style>
-:root{--green:#07543d;--cream:#faf8ef;--yellow:#ffc642}
-*{box-sizing:border-box}
-body{margin:0;background:var(--cream);color:var(--green);font-family:Arial,Helvetica,sans-serif}
-header{background:#fffdf7;border-bottom:1px solid #e0e7d9;padding:20px 24px}
-a{color:inherit}
-.logo{text-decoration:none;font-size:25px;font-weight:800}
-.logo span{color:#d99d00}
-main{max-width:850px;margin:45px auto;padding:0 24px 70px}
-h1{font:bold clamp(34px,5vw,48px) Georgia,serif}
-p{line-height:1.6}
-.panels{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
-.panel{background:#fffdf7;border:1px solid #e0e7d9;border-radius:16px;padding:24px}
-label{display:block;font-size:14px;font-weight:bold;margin:15px 0 7px}
-input{width:100%;padding:12px;border:1px solid #a8b9ab;border-radius:8px;font:inherit}
-button{border:0;background:var(--green);color:white;border-radius:9px;padding:12px 18px;font-weight:bold;cursor:pointer;margin-top:17px}
-button.secondary{background:var(--yellow);color:var(--green)}
-.status{margin:20px 0;padding:14px;background:#e8efdf;border-radius:8px;min-height:48px}
-.status.error{background:#ffe5df;color:#792a19}
-small{display:block;margin-top:12px;line-height:1.5}
-code{overflow-wrap:anywhere}
-.home-link{display:inline-block;background:var(--yellow);color:var(--green);border-radius:9px;padding:12px 18px;font-weight:bold;text-decoration:none;margin-top:4px}
-.home-link:hover{filter:brightness(.97)}
+:root {
+  --green:#07543d;
+  --cream:#faf8ef;
+  --yellow:#ffc642;
+}
+
+* { box-sizing:border-box; }
+
+body {
+  margin:0;
+  background:var(--cream);
+  color:var(--green);
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+header {
+  background:#fffdf7;
+  border-bottom:1px solid #e0e7d9;
+  padding:20px 24px;
+}
+
+a { color:inherit; }
+
+.logo {
+  text-decoration:none;
+  font-size:25px;
+  font-weight:800;
+}
+
+.logo span { color:#d99d00; }
+
+main {
+  max-width:850px;
+  margin:45px auto;
+  padding:0 24px 70px;
+}
+
+h1 {
+  font:bold clamp(34px,5vw,48px) Georgia,serif;
+}
+
+p { line-height:1.6; }
+
+.panel {
+  background:#fffdf7;
+  border:1px solid #e0e7d9;
+  border-radius:16px;
+  padding:24px;
+}
+
+button {
+  border:0;
+  background:var(--green);
+  color:white;
+  border-radius:9px;
+  padding:12px 18px;
+  font-weight:bold;
+  cursor:pointer;
+  margin-top:17px;
+}
+
+.status {
+  margin:20px 0;
+  padding:14px;
+  background:#e8efdf;
+  border-radius:8px;
+  min-height:48px;
+}
+
+.status.error {
+  background:#ffe5df;
+  color:#792a19;
+}
+
+code { overflow-wrap:anywhere; }
+
+.home-link {
+  display:inline-block;
+  background:var(--yellow);
+  color:var(--green);
+  border-radius:9px;
+  padding:12px 18px;
+  font-weight:bold;
+  text-decoration:none;
+}
+
+.home-link:hover {
+  filter:brightness(.97);
+}
 </style>
 </head>
+
 <body>
-<header><a class="logo" href="/">Crave<span>folio</span></a></header>
+
+<header>
+  <a class="logo" href="/">
+    Crave<span>folio</span>
+  </a>
+</header>
+
 <main>
-<a class="home-link" href="/">⌂ Back to Home</a>
-<h1>Your Cravefolio account</h1>
-<p>View your account details and manage your sign-in session.</p>
-<div id="status" class="status" role="status" aria-live="polite">Loading account…</div>
+
+<a class="home-link" href="/">
+  ⌂ Back to Home
+</a>
+
+<h1>Your Cravefolio Account</h1>
+
+<p>
+  Welcome back! View your account information and manage
+  your Cravefolio experience.
+</p>
+
+<div id="status" class="status" role="status" aria-live="polite">
+  Loading your account…
+</div>
+
 <section class="panel">
-<h2>Signed-in account</h2>
-<p><strong>Email:</strong> <span id="email">Loading…</span></p>
-<p><strong>Customer identifier:</strong> <code id="identifier">Loading…</code></p>
-<button id="signout" type="button">Sign out</button>
+
+<h2>Account Information</h2>
+
+<p>
+  <strong>Email:</strong>
+  <span id="email">Loading…</span>
+</p>
+
+<p>
+  <strong>Customer identifier:</strong>
+  <code id="identifier">Loading…</code>
+</p>
+
+<button id="signout" type="button">
+  Sign Out
+</button>
+
 </section>
+
 </main>
+
 <script type="module" src="/auth.js"></script>
+
 </body>
 </html>
