@@ -3,7 +3,14 @@ const $ = id => document.getElementById(id);
 
 const base = 'https://cravefolio.net';
 
-const page = location.pathname.split('/').pop();
+// Supports both /account and /account.html,
+// as well as /login and /login.html.
+const page = (
+  location.pathname
+    .split('/')
+    .filter(Boolean)
+    .pop() || ''
+).replace(/\.html$/, '') + '.html';
 
 function notice(message, error = false) {
   const el = $('status');
@@ -30,13 +37,16 @@ function setBusy(form, busy) {
 
 let supabase;
 
+// Load Supabase.
 try {
   const library = await Promise.race([
     import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8/+esm'),
 
     new Promise((_, reject) =>
       setTimeout(
-        () => reject(new Error('Authentication service timed out. Please refresh.')),
+        () => reject(
+          new Error('Authentication service timed out. Please refresh.')
+        ),
         10000
       )
     )
@@ -64,7 +74,10 @@ $('signup')?.addEventListener('submit', async event => {
   const password = $('signup-password').value;
 
   if (!email || password.length < 8) {
-    return notice('Enter a valid email and a password of at least 8 characters.', true);
+    return notice(
+      'Enter a valid email and a password of at least 8 characters.',
+      true
+    );
   }
 
   setBusy(form, true);
@@ -87,7 +100,8 @@ $('signup')?.addEventListener('submit', async event => {
     }
 
     notice(
-      'Please check your email for a confirmation link. If you already have an account, try signing in or resetting your password.'
+      'Please check your email for a confirmation link. ' +
+      'If you already have an account, try signing in or resetting your password.'
     );
 
   } catch (error) {
@@ -130,12 +144,16 @@ $('signin')?.addEventListener('submit', async event => {
 // FORGOT PASSWORD
 $('reset')?.addEventListener('click', async event => {
   const button = event.currentTarget;
+
   if (button.disabled) return;
 
   const email = $('signin-email')?.value.trim();
 
   if (!email) {
-    return notice('Enter your email in the sign-in field first.', true);
+    return notice(
+      'Enter your email in the sign-in field first.',
+      true
+    );
   }
 
   button.disabled = true;
@@ -148,7 +166,9 @@ $('reset')?.addEventListener('click', async event => {
 
     if (error) throw error;
 
-    notice('If the address has an account, a password reset email will arrive.');
+    notice(
+      'If the address has an account, a password reset email will arrive.'
+    );
 
   } catch (error) {
     notice(messageOf(error), true);
@@ -169,7 +189,10 @@ $('password-reset')?.addEventListener('submit', async event => {
   const password = $('new-password').value;
 
   if (password.length < 8) {
-    return notice('Your password must contain at least 8 characters.', true);
+    return notice(
+      'Your password must contain at least 8 characters.',
+      true
+    );
   }
 
   setBusy(form, true);
@@ -182,7 +205,9 @@ $('password-reset')?.addEventListener('submit', async event => {
 
     if (error) throw error;
 
-    notice('Password updated successfully. You can visit your account.');
+    notice(
+      'Password updated successfully. You can visit your account.'
+    );
 
   } catch (error) {
     notice(messageOf(error), true);
@@ -214,7 +239,7 @@ $('signout')?.addEventListener('click', async event => {
   }
 });
 
-// DISPLAY ACCOUNT
+// DISPLAY ACCOUNT INFORMATION
 function showAccount(session) {
   if (!session?.user) {
     location.replace('/login.html');
@@ -232,7 +257,7 @@ function showAccount(session) {
   notice('Account information loaded.');
 }
 
-// INITIALIZE SESSION
+// INITIALIZE AUTHENTICATION
 async function initialize() {
   if (page !== 'login.html' && page !== 'account.html') {
     return;
@@ -246,7 +271,9 @@ async function initialize() {
 
       new Promise((_, reject) => {
         timeoutId = setTimeout(
-          () => reject(new Error('Session check timed out. Please refresh.')),
+          () => reject(
+            new Error('Session check timed out. Please refresh.')
+          ),
           10000
         );
       })
@@ -268,19 +295,33 @@ async function initialize() {
 
   } catch (error) {
     if (page === 'account.html') {
-      if ($('email')) $('email').textContent = 'Unable to load account';
-      if ($('identifier')) $('identifier').textContent = 'Please refresh this page';
+      if ($('email')) {
+        $('email').textContent = 'Unable to load account';
+      }
+
+      if ($('identifier')) {
+        $('identifier').textContent = 'Please refresh this page';
+      }
     }
 
     notice(messageOf(error), true);
-    console.error('Cravefolio authentication:', error);
+
+    console.error(
+      'Cravefolio authentication:',
+      error
+    );
 
   } finally {
     clearTimeout(timeoutId);
   }
 }
 
+// START AUTHENTICATION
 initialize().catch(error => {
-  notice('Authentication initialization failed: ' + messageOf(error), true);
+  notice(
+    'Authentication initialization failed: ' + messageOf(error),
+    true
+  );
+
   console.error(error);
 });
