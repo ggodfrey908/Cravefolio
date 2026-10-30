@@ -1,44 +1,10 @@
 
-const statusNode = document.getElementById('status');
-
-let supabase;
-
-try {
-  const library = await Promise.race([
-    import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8/+esm'),
-    new Promise((_, reject) =>
-      setTimeout(
-        () => reject(new Error('Supabase library import timed out.')),
-        10000
-      )
-    )
-  ]);
-
-  supabase = library.createClient(
-    'https://pbczagafrazaylcaepqy.supabase.co',
-    'sb_publishable_xMDpDophp-dacKxk0Qggiw_339u1rIe'
-  );
-
-} catch (error) {
-  if (statusNode) {
-    statusNode.textContent =
-      'Authentication startup failed: ' +
-      (error?.message || 'Unknown error');
-
-    statusNode.className = 'status error';
-  }
-
-  throw error;
-}
-
 const $ = id => document.getElementById(id);
-
-const page =
-  location.pathname.split('/').pop().replace(/\.html$/, '') + '.html';
 
 const base = 'https://cravefolio.net';
 
-// Display normal account and authentication messages.
+const page = location.pathname.split('/').pop();
+
 function notice(message, error = false) {
   const el = $('status');
 
@@ -52,102 +18,203 @@ function messageOf(error) {
   return error?.message || 'Something went wrong. Please try again.';
 }
 
-// Create account.
-$('signup')?.addEventListener('submit', async e => {
-  e.preventDefault();
+function setBusy(form, busy) {
+  if (!form) return;
 
-  notice('Creating account…');
+  form.dataset.busy = busy ? 'true' : 'false';
 
-  const { data, error } = await supabase.auth.signUp({
-    email: $('signup-email').value.trim(),
-    password: $('signup-password').value,
-    options: {
-      emailRedirectTo: base + '/account.html'
-    }
+  form.querySelectorAll('button').forEach(button => {
+    button.disabled = busy;
   });
+}
 
-  if (error) {
-    return notice(messageOf(error), true);
+let supabase;
+
+try {
+  const library = await Promise.race([
+    import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8/+esm'),
+
+    new Promise((_, reject) =>
+      setTimeout(
+        () => reject(new Error('Authentication service timed out. Please refresh.')),
+        10000
+      )
+    )
+  ]);
+
+  supabase = library.createClient(
+    'https://pbczagafrazaylcaepqy.supabase.co',
+    'sb_publishable_xMDpDophp-dacKxk0Qggiw_339u1rIe'
+  );
+
+} catch (error) {
+  notice('Authentication could not start: ' + messageOf(error), true);
+  throw error;
+}
+
+// CREATE ACCOUNT
+$('signup')?.addEventListener('submit', async event => {
+  event.preventDefault();
+
+  const form = event.currentTarget;
+
+  if (form.dataset.busy === 'true') return;
+
+  const email = $('signup-email').value.trim();
+  const password = $('signup-password').value;
+
+  if (!email || password.length < 8) {
+    return notice('Enter a valid email and a password of at least 8 characters.', true);
   }
 
-  if (data.session) {
-    location.assign('/account.html');
-  } else {
+  setBusy(form, true);
+  notice('Creating your account…');
+
+  try {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: base + '/account.html'
+      }
+    });
+
+    if (error) throw error;
+
+    if (data.session) {
+      location.assign('/account.html');
+      return;
+    }
+
     notice(
-      'Check your email for a confirmation link, then return to sign in.'
+      'Please check your email for a confirmation link. If you already have an account, try signing in or resetting your password.'
     );
+
+  } catch (error) {
+    notice(messageOf(error), true);
+
+  } finally {
+    setBusy(form, false);
   }
 });
 
-// Sign in.
-$('signin')?.addEventListener('submit', async e => {
-  e.preventDefault();
+// SIGN IN
+$('signin')?.addEventListener('submit', async event => {
+  event.preventDefault();
 
+  const form = event.currentTarget;
+
+  if (form.dataset.busy === 'true') return;
+
+  setBusy(form, true);
   notice('Signing in…');
 
-  const { error } = await supabase.auth.signInWithPassword({
-    email: $('signin-email').value.trim(),
-    password: $('signin-password').value
-  });
+  try {
+    const { error } = await supabase.auth.signInWithPassword({
+      email: $('signin-email').value.trim(),
+      password: $('signin-password').value
+    });
 
-  if (error) {
-    return notice(messageOf(error), true);
+    if (error) throw error;
+
+    location.assign('/account.html');
+
+  } catch (error) {
+    notice(messageOf(error), true);
+
+  } finally {
+    setBusy(form, false);
   }
-
-  location.assign('/account.html');
 });
 
-// Password recovery.
-$('reset')?.addEventListener('click', async () => {
-  const email = $('signin-email').value.trim();
+// FORGOT PASSWORD
+$('reset')?.addEventListener('click', async event => {
+  const button = event.currentTarget;
+  if (button.disabled) return;
+
+  const email = $('signin-email')?.value.trim();
 
   if (!email) {
-    return notice(
-      'Enter your email in the sign-in field first.',
-      true
-    );
+    return notice('Enter your email in the sign-in field first.', true);
   }
 
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: base + '/reset-password.html'
-  });
+  button.disabled = true;
+  notice('Sending password reset instructions…');
 
-  notice(
-    error
-      ? messageOf(error)
-      : 'If the address has an account, a reset email will arrive.',
-    !!error
-  );
+  try {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: base + '/reset-password.html'
+    });
+
+    if (error) throw error;
+
+    notice('If the address has an account, a password reset email will arrive.');
+
+  } catch (error) {
+    notice(messageOf(error), true);
+
+  } finally {
+    button.disabled = false;
+  }
 });
 
-// Update password.
-$('password-reset')?.addEventListener('submit', async e => {
-  e.preventDefault();
+// SAVE NEW PASSWORD
+$('password-reset')?.addEventListener('submit', async event => {
+  event.preventDefault();
 
-  const { error } = await supabase.auth.updateUser({
-    password: $('new-password').value
-  });
+  const form = event.currentTarget;
 
-  notice(
-    error
-      ? messageOf(error)
-      : 'Password updated. You can visit your account.',
-    !!error
-  );
-});
+  if (form.dataset.busy === 'true') return;
 
-// Sign out.
-$('signout')?.addEventListener('click', async () => {
-  const { error } = await supabase.auth.signOut();
+  const password = $('new-password').value;
 
-  if (error) {
-    return notice(messageOf(error), true);
+  if (password.length < 8) {
+    return notice('Your password must contain at least 8 characters.', true);
   }
 
-  location.replace('/login.html');
+  setBusy(form, true);
+  notice('Updating password…');
+
+  try {
+    const { error } = await supabase.auth.updateUser({
+      password
+    });
+
+    if (error) throw error;
+
+    notice('Password updated successfully. You can visit your account.');
+
+  } catch (error) {
+    notice(messageOf(error), true);
+
+  } finally {
+    setBusy(form, false);
+  }
 });
 
-// Display account information.
+// SIGN OUT
+$('signout')?.addEventListener('click', async event => {
+  const button = event.currentTarget;
+
+  if (button.disabled) return;
+
+  button.disabled = true;
+  notice('Signing out…');
+
+  try {
+    const { error } = await supabase.auth.signOut();
+
+    if (error) throw error;
+
+    location.replace('/login.html');
+
+  } catch (error) {
+    notice(messageOf(error), true);
+    button.disabled = false;
+  }
+});
+
+// DISPLAY ACCOUNT
 function showAccount(session) {
   if (!session?.user) {
     location.replace('/login.html');
@@ -165,9 +232,9 @@ function showAccount(session) {
   notice('Account information loaded.');
 }
 
-// Check the current account session.
+// INITIALIZE SESSION
 async function initialize() {
-  if (page !== 'account.html' && page !== 'login.html') {
+  if (page !== 'login.html' && page !== 'account.html') {
     return;
   }
 
@@ -179,55 +246,41 @@ async function initialize() {
 
       new Promise((_, reject) => {
         timeoutId = setTimeout(
-          () => reject(
-            new Error(
-              'Session check timed out. Please reload this page.'
-            )
-          ),
+          () => reject(new Error('Session check timed out. Please refresh.')),
           10000
         );
       })
     ]);
 
-    if (result.error) {
-      throw result.error;
-    }
+    if (result.error) throw result.error;
 
     const session = result.data.session;
 
     if (page === 'account.html') {
       showAccount(session);
+
     } else if (session) {
       location.replace('/account.html');
+
     } else {
       notice('Enter your details below.');
     }
 
   } catch (error) {
     if (page === 'account.html') {
-      if ($('email')) {
-        $('email').textContent = 'Unable to load account';
-      }
-
-      if ($('identifier')) {
-        $('identifier').textContent = 'Please refresh this page';
-      }
+      if ($('email')) $('email').textContent = 'Unable to load account';
+      if ($('identifier')) $('identifier').textContent = 'Please refresh this page';
     }
 
     notice(messageOf(error), true);
-
-    console.error(
-      'Cravefolio authentication initialization:',
-      error
-    );
+    console.error('Cravefolio authentication:', error);
 
   } finally {
     clearTimeout(timeoutId);
   }
 }
 
-// Start authentication.
 initialize().catch(error => {
-  notice('Initialization failed: ' + messageOf(error), true);
+  notice('Authentication initialization failed: ' + messageOf(error), true);
   console.error(error);
 });
