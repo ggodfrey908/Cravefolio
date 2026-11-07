@@ -1,0 +1,500 @@
+# Cravefolio — Development Status & Project Handoff
+
+**Last updated:** November 6, 2026  
+**Project:** Cravefolio  
+**Purpose:** Permanent development reference for continuing work across ChatGPT conversations.
+
+---
+
+## 1. Project Overview
+
+Cravefolio is a restaurant rewards tracking website designed to help customers organize restaurant loyalty rewards, points, coupons, promotional offers, and expiration dates in one convenient location.
+
+The initial development strategy is to use forwarded restaurant reward emails as the primary source of reward information.
+
+### Long-term vision
+
+- Automatically recognize restaurant reward emails.
+- Extract reward descriptions, points, and expiration dates.
+- Organize rewards by restaurant.
+- Give each customer a personalized rewards dashboard.
+- Eventually support more automated reward discovery and tracking.
+
+The current priority is building a reliable email-based foundation before expanding automation.
+
+---
+
+## 2. Production Website and Infrastructure
+
+### Website domains
+
+| Purpose | Address |
+|---|---|
+| Primary production domain | https://cravefolio.net/ |
+| Cloudflare Pages address | https://cravefolio.pages.dev/ |
+
+**Important:** `cravefolio.net` is the primary production domain. The `.pages.dev` address is the original Cloudflare Pages address and should not be treated as the primary website address.
+
+Verify redirect and canonical-domain configuration before changing domain settings.
+
+### Infrastructure
+
+| Component | Current configuration |
+|---|---|
+| Website hosting | Cloudflare Pages |
+| Source control | GitHub |
+| Backend | Cloudflare Workers |
+| Database | Cloudflare D1 |
+| Authentication | Supabase Auth |
+| D1 database | `cravefolio-rewards-dev` |
+| Worker | `cravefolio-email-test` |
+| Worker endpoint | `https://cravefolio-email-test.ggodfrey908.workers.dev` |
+| Contact email | `ggodfrey908@gmail.com` |
+
+### Development workflow
+
+- Website files are maintained in GitHub.
+- Cloudflare Pages deploys website changes.
+- Worker changes are deployed separately.
+- D1 stores reward records.
+- Supabase handles customer authentication.
+- The Worker authenticates API requests and isolates customer records.
+
+GitHub is the source of truth for website code. Always work from the latest repository versions.
+
+---
+
+## 3. Backend Development Status
+
+### Current Worker version
+
+`8.7-duplicate-merge`
+
+**Version clarification:** The current Worker code previously supplied had an older header comment identifying it as V8.3, but its actual version constant was `8.7-duplicate-merge`.
+
+Use the actual version constant and deployed Worker configuration when determining the current version.
+
+### Completed backend functionality
+
+Previously implemented and tested:
+
+- Supabase JWT authentication.
+- Customer-specific reward retrieval.
+- Email reward extraction.
+- Restaurant recognition.
+- Reward description extraction.
+- Points extraction.
+- Expiration extraction when supported by the email.
+- Duplicate reward detection.
+- Duplicate reward merging.
+- Reward editing.
+- Reward deletion.
+- Protected customer API requests.
+- Database connectivity checks.
+
+### Existing API functionality
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /health` | Worker health check |
+| `GET /api/rewards` | Retrieve the authenticated customer's rewards |
+| `PATCH /api/rewards/:id` | Update a reward |
+| `DELETE /api/rewards/:id` | Delete a reward |
+| `POST /api/rewards` | Create a reviewed reward record |
+
+The Worker also contains email-processing and supporting endpoints. Always consult the latest Worker source before changing endpoint behavior.
+
+### Reward retrieval limit
+
+The current authenticated rewards query retrieves up to 100 records for the signed-in customer.
+
+The query uses customer isolation:
+
+`WHERE customer_id = ?`
+
+This is important for the restaurant directory and account pages.
+
+If the product eventually needs to support more than 100 saved rewards per customer, pagination or a larger retrieval strategy will need to be implemented.
+
+### Database isolation
+
+Every customer's rewards must remain private to that customer.
+
+Never expose one customer's rewards to another customer.
+
+All future directory, restaurant-page, and account functionality must preserve this isolation.
+
+### Previous backend tests
+
+The following behaviors were previously verified:
+
+- Database connection works.
+- Reward extraction works.
+- Duplicate rewards are detected.
+- Duplicate records can be skipped.
+- Existing rewards can be updated.
+- Rewards can be deleted.
+- Deleted records return 404 when requested again.
+- Unauthenticated protected requests return 401 Unauthorized.
+
+These tests establish previous successful functionality, not a guarantee that every future deployment remains correct. Retest after relevant changes.
+
+---
+
+## 4. Email Recognition and Extraction
+
+The current email extractor recognizes a predefined list of restaurant names.
+
+Known restaurant names include:
+
+1. McDonald's
+2. Smoothie King
+3. Starbucks
+4. Chipotle
+5. Panera Bread
+6. Taco Bell
+7. Dunkin'
+8. Wendy's
+9. Burger King
+10. Domino's
+11. Chick-fil-A
+
+### Important limitation
+
+The current extractor does not automatically recognize every possible restaurant brand.
+
+The website can dynamically display restaurant names already stored in a customer's reward records, but this is different from unrestricted restaurant discovery during email extraction.
+
+Expanding restaurant recognition is a separate backend improvement.
+
+Do not advertise universal restaurant recognition until it has been implemented and tested.
+
+### Duplicate handling — V8.7
+
+V8.7 improved duplicate detection and merging.
+
+The system identifies matching rewards for the same customer and restaurant without requiring points or expiration dates to match.
+
+It can also update an existing reward when a later email provides better information.
+
+Specific improvements include:
+
+- Exact normalized reward-text matching.
+- Narrow Smoothie King equivalency handling for certain 12 oz Chocolate Peppermint smoothie offers.
+- Filling previously missing points or expiration information.
+- Preserving existing nonempty information when no better information is available.
+- Logging whether a duplicate was skipped or merged.
+
+A Smoothie King test confirmed that an already-recorded reward was skipped instead of being inserted again.
+
+A separate merge test should be performed when verifying future duplicate-handling changes.
+
+### Accuracy rules
+
+Never invent:
+
+- Expiration dates.
+- Points balances.
+- Reward descriptions.
+- Redemption URLs.
+- Restaurant identities.
+
+For example, "TODAY ONLY" should not automatically be converted into a specific expiration date unless the source information supports that conversion.
+
+---
+
+## 5. Authentication Status
+
+Supabase authentication has been configured.
+
+### Previously verified
+
+- Email authentication is enabled.
+- Account registration works.
+- Email confirmation works.
+- Password reset works.
+- Password changes work.
+
+### Outstanding issue: Account page loading
+
+The account page previously became stuck on:
+
+`Loading...`
+
+Diagnostics showed:
+
+- Supabase JS v2.49.8 was imported.
+- The Supabase client was created.
+- Network requests returned HTTP 200.
+- No obvious browser console errors were reported.
+- The diagnostic page stopped at Step 3: Supabase client created.
+- The issue persisted in an InPrivate browser session.
+
+The account page authentication and initialization flow needs to be revisited.
+
+Do not replace the authentication system or change Supabase configuration unnecessarily while working on unrelated directory functionality.
+
+Preserve the existing authentication implementation unless testing identifies a specific problem.
+
+---
+
+## 6. Current Website Features
+
+Previously completed website components:
+
+- Homepage.
+- Restaurant directory.
+- Individual restaurant reward pages.
+- About page.
+- Contact page.
+- Privacy policy.
+- Favicon.
+- Sitemap.
+- Google Search Console setup.
+
+The website uses a welcoming, vibrant design with green branding and yellow accents.
+
+The design should remain consistent across future pages.
+
+### Branding requirements
+
+- Green branding and lettering.
+- Yellow accents.
+- Yellow spoon element in the logo.
+- Welcoming and vibrant appearance.
+- General restaurant-rewards theme.
+
+Avoid unnecessary redesigns or unrelated image generation.
+
+---
+
+## 7. Current Restaurant Directory
+
+The initial curated directory contains ten restaurants:
+
+1. McDonald's
+2. Chick-fil-A
+3. Starbucks
+4. Taco Bell
+5. Wendy's
+6. Chipotle
+7. Dunkin'
+8. Domino's
+9. Panera Bread
+10. Burger King
+
+The directory includes search and category filtering.
+
+Four restaurants previously had dedicated reward pages:
+
+- McDonald's
+- Starbucks
+- Chipotle
+- Panera Bread
+
+These pages use a shared restaurant-page structure.
+
+The existing ten restaurant cards and their styling should be preserved during the next development task.
+
+### Important terminology
+
+A restaurant being supported by Cravefolio does not mean Cravefolio is directly integrated with that restaurant's loyalty system.
+
+Cravefolio currently relies on reward information obtained through customer-forwarded emails.
+
+---
+
+## 8. Immediate Development Priority: Dynamic Restaurant Discovery
+
+**This is the next development task.**
+
+The goal is to allow restaurants discovered through a customer's forwarded emails to appear automatically in that customer's restaurant directory.
+
+### Desired workflow
+
+1. A customer forwards a restaurant rewards email.
+2. The Worker extracts the restaurant and reward information.
+3. The reward is saved to D1 under that customer's account.
+4. The customer's restaurant directory retrieves their saved rewards.
+5. Restaurants not already represented in the curated directory are added dynamically.
+6. Selecting a restaurant opens a reusable restaurant detail page.
+7. The detail page displays that customer's saved rewards for the selected restaurant.
+
+### Directory requirements
+
+- Preserve the original ten curated restaurant cards.
+- Preserve the existing directory design.
+- Dynamically add restaurants found in the customer's reward records.
+- Avoid duplicate restaurant cards.
+- Normalize restaurant names when comparing entries.
+- Use URL-safe restaurant names in detail-page links.
+- Preserve existing search functionality.
+- Preserve category filtering.
+- Handle logged-out users gracefully.
+- Do not invent restaurant logos, official links, or website addresses.
+- Use a generic presentation for newly discovered restaurants.
+
+### Restaurant detail-page requirements
+
+The reusable restaurant page must:
+
+- Accept a restaurant name through a URL parameter.
+- Support existing curated restaurants.
+- Support restaurants not included in the original catalog.
+- Retrieve rewards belonging only to the signed-in customer.
+- Match the selected restaurant against the customer's saved reward records.
+- Display saved rewards for the selected restaurant.
+- Show an appropriate empty state when no matching rewards exist.
+- Preserve existing reward editing and deletion functionality.
+- Preserve expiration information and existing reward-management features.
+
+### Customer privacy
+
+Dynamic restaurant discovery must be customer-specific.
+
+A customer should only see restaurants derived from their own authenticated reward records.
+
+Do not create a public directory containing restaurants discovered from private customer emails.
+
+### Backend changes
+
+The existing authenticated `GET /api/rewards` endpoint should provide the information needed for this feature.
+
+The current plan is to implement dynamic discovery using the existing endpoint without modifying the Worker or D1 schema.
+
+Only change the backend if testing identifies a concrete technical requirement.
+
+---
+
+## 9. Files Required for the Next Development Task
+
+Obtain the latest complete versions of:
+
+- `restaurants.html`
+- `restaurant.html`
+
+These files must come from the current GitHub repository.
+
+Do not rely on old copies or incomplete conversation summaries.
+
+### File modification rules
+
+1. Review both complete files before editing.
+2. Preserve existing functionality.
+3. Provide complete replacement files whenever practical.
+4. Explain exactly which GitHub file to open.
+5. Clearly identify whether the entire file should be replaced.
+6. Change only files necessary for the task.
+7. Test each change before moving to the next one.
+8. Avoid unnecessary Worker or database changes.
+
+---
+
+## 10. Reward Display and Accuracy Rules
+
+Cravefolio is an independent tracking tool.
+
+It is not affiliated with the restaurants whose rewards it displays.
+
+The website must not claim:
+
+- That it directly connects to restaurant loyalty accounts.
+- That points balances are verified live balances.
+- That rewards are guaranteed to be redeemable.
+- That expiration dates exist when the source email did not provide them.
+- That an unverified redemption link is official.
+
+Display the latest saved information and clearly communicate that customers should verify balances, eligibility, expiration dates, and redemption conditions with the restaurant.
+
+Points shown by Cravefolio should be described as the latest recorded information, not a verified live balance.
+
+---
+
+## 11. Search Engine and Domain Configuration
+
+The primary production domain is:
+
+`https://cravefolio.net/`
+
+The original Cloudflare Pages address is:
+
+`https://cravefolio.pages.dev/`
+
+### Previous SEO work
+
+- Google Search Console was verified.
+- A sitemap was created and submitted.
+- The sitemap previously contained five URLs.
+- A previous Search Console submission reported "couldn't fetch" even though live URL testing was available.
+- The favicon issue was resolved.
+- About and Contact links were previously working.
+
+### Remaining verification
+
+- Confirm the sitemap is accessible on the `.net` domain.
+- Confirm the sitemap contains the correct canonical URLs.
+- Confirm canonical tags point to the `.net` domain.
+- Verify whether the `.pages.dev` address redirects to the primary domain.
+- Confirm Google Search Console is monitoring the correct domain property.
+- Recheck indexing after any significant URL changes.
+
+Do not assume SEO or redirect configuration is correct without checking the live site.
+
+---
+
+## 12. Development Priorities
+
+### Immediate
+
+- [ ] Obtain current `restaurants.html`.
+- [ ] Obtain current `restaurant.html`.
+- [ ] Implement dynamic restaurant discovery.
+- [ ] Test newly discovered restaurants.
+- [ ] Verify customer-specific data isolation.
+- [ ] Verify existing curated restaurant pages still work.
+- [ ] Verify search and category filtering.
+- [ ] Confirm the directory works for logged-in and logged-out users.
+
+### Following the directory update
+
+- [ ] Revisit the Supabase account-page loading issue.
+- [ ] Test the complete customer signup and login experience.
+- [ ] Test reward display from forwarded emails.
+- [ ] Test editing and deleting rewards from the website.
+- [ ] Review Search Console sitemap status.
+- [ ] Continue improving restaurant recognition and extraction accuracy.
+- [ ] Evaluate pagination if customers approach the current 100-reward retrieval limit.
+
+---
+
+## 13. Important Development Rules
+
+1. GitHub is the source of truth for website code.
+2. Always work from the latest committed file versions.
+3. Do not assume an old conversation contains the latest code.
+4. Preserve existing working functionality.
+5. Avoid unnecessary Worker and database changes.
+6. Do not mix Cravefolio development with ProjectLab.
+7. Preserve customer data isolation.
+8. Test authentication when modifying customer-facing data features.
+9. Prefer complete, paste-ready code.
+10. Clearly explain deployment and testing steps.
+11. Record significant architecture changes and completed milestones in this document.
+12. Distinguish completed features from planned or unverified features.
+13. Never invent missing configuration details or claim a test passed without evidence.
+
+---
+
+## 14. How to Resume Development in a New Chat
+
+Start a new conversation and provide this document.
+
+Use the following instruction:
+
+"Continue developing Cravefolio using this development status document. Treat GitHub as the source of truth. Follow the documented development rules, preserve existing functionality, and continue from the immediate development priority. Do not repeat completed work unless verification is necessary."
+
+The next task is dynamic restaurant discovery using the latest `restaurants.html` and `restaurant.html`.
+
+---
+
+**End of Cravefolio Development Status.**
