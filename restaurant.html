@@ -7,7 +7,6 @@
 <title>Restaurant Rewards | Cravefolio</title>
 <meta name="description" content="View and manage your restaurant-specific rewards, points, and expiration information.">
 <link rel="icon" type="image/x-icon" sizes="any" href="/favicon.ico?v=2">
-
 <style>
 :root {
  --green:#07543d;
@@ -87,30 +86,11 @@ main{max-width:1150px;margin:auto;padding:36px 24px 75px}
 footer{background:var(--green);color:white;text-align:center;padding:30px 20px;font-size:12px}
 footer a{margin:0 9px;text-decoration:none}
 footer p{color:#c9dfd0;margin-top:18px}
-
-/* General restaurant website button */
-.restaurant-website-link{
- display:flex;
- justify-content:center;
- align-items:center;
- margin-top:10px;
- padding:13px 16px;
- background:var(--green);
- color:white;
- border-radius:10px;
- text-decoration:none;
- text-align:center;
- font-size:13px;
- font-weight:800;
-}
+.restaurant-website-link{display:flex;justify-content:center;align-items:center;margin-top:10px;padding:13px 16px;background:var(--green);color:white;border-radius:10px;text-decoration:none;text-align:center;font-size:13px;font-weight:800}
 .restaurant-website-link:hover{background:#0b6b4e}
-
 button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--green);outline-offset:3px}
 [hidden]{display:none!important}
-
-@media(max-width:800px){
- .reward-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-}
+@media(max-width:800px){.reward-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){
  .nav{flex-direction:column}
  .overview,.reward-grid{grid-template-columns:1fr}
@@ -122,7 +102,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
 </head>
 
 <body>
-
 <header>
 <div class="nav">
  <a class="logo" href="/">Crave<span>folio.</span></a>
@@ -146,7 +125,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
 </section>
 
 <main>
-
 <div class="notice" id="dashboard-status" role="status" aria-live="polite">
  Checking your account and loading rewards...
 </div>
@@ -159,7 +137,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
 </section>
 
 <div id="dashboard-content" hidden>
-
 <section class="overview" aria-label="Restaurant rewards overview">
  <div class="stat">
   <div class="stat-icon">🎁</div>
@@ -167,14 +144,12 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
   <div class="stat-value" id="reward-count">0</div>
   <div class="stat-detail">Rewards saved for this restaurant</div>
  </div>
-
  <div class="stat">
   <div class="stat-icon">★</div>
   <div class="stat-label">Latest Recorded Points</div>
   <div class="stat-value" id="points-value">—</div>
   <div class="stat-detail">Latest available saved record, not a verified live balance</div>
  </div>
-
  <div class="stat">
   <div class="stat-icon">⏰</div>
   <div class="stat-label">Upcoming Expirations</div>
@@ -186,7 +161,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
 <section class="info-panel" aria-labelledby="restaurant-info-title">
  <h2 id="restaurant-info-title">Restaurant Information</h2>
  <p id="restaurant-info"></p>
- <a id="official-link" target="_blank" rel="noopener noreferrer">Visit Official Restaurant Website →</a>
+ <a id="official-link" target="_blank" rel="noopener noreferrer" hidden>Visit Official Restaurant Website →</a>
  <p>Cravefolio is independent and is not affiliated with this restaurant. Its official app or website remains the authoritative source for balances, eligibility and redemption terms.</p>
  <p><strong>Signed-in Cravefolio account:</strong> <span id="customer-email">—</span></p>
 </section>
@@ -196,14 +171,12 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
   <h2 id="rewards-title">My Saved Rewards</h2>
   <a href="/rewards.html">View All My Rewards →</a>
  </div>
-
  <div id="rewards-empty" class="empty-panel" hidden>
   <div class="empty-icon" aria-hidden="true">🎁</div>
   <h3>No saved rewards yet</h3>
   <p>There are currently no saved reward records for this restaurant in your Cravefolio account.</p>
   <a class="cta" href="/rewards.html">Open My Rewards →</a>
  </div>
-
  <div id="rewards-list" class="reward-grid" aria-live="polite"></div>
 </section>
 
@@ -211,16 +184,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
  <div class="section-heading">
   <h2 id="expiration-title">Upcoming Expirations</h2>
  </div>
-
  <div id="expirations-empty" class="empty-panel" hidden>
   <div class="empty-icon" aria-hidden="true">🔔</div>
   <h3>No upcoming expirations</h3>
   <p>There are no saved rewards for this restaurant with known expiration dates in the next 30 days. Offers with unverified dates are not counted here. Automated notifications are not currently active.</p>
  </div>
-
  <div id="expirations-list" class="expiration-list"></div>
 </section>
-
 </div>
 </main>
 
@@ -238,7 +208,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
 </footer>
 
 <script type="module">
-
 const SUPABASE_URL='https://pbczagafrazaylcaepqy.supabase.co';
 const SUPABASE_KEY='sb_publishable_xMDpDophp-dacKxk0Qggiw_339u1rIe';
 const WORKER_URL='https://cravefolio-email-test.ggodfrey908.workers.dev';
@@ -276,8 +245,31 @@ const catalog={
 
 const $=id=>document.getElementById(id);
 
-const key=new URLSearchParams(location.search).get('name');
-const restaurant=Object.prototype.hasOwnProperty.call(catalog,key)?catalog[key]:null;
+function normalizeRestaurant(value){
+ return String(value||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+}
+
+const requestedName=(new URLSearchParams(location.search).get('name')||'').trim();
+const requestedNormalized=normalizeRestaurant(requestedName);
+
+let restaurant=null;
+
+if(requestedName&&requestedName.length<=100&&requestedNormalized){
+ restaurant=Object.values(catalog).find(item=>
+  item.aliases.includes(requestedNormalized)||
+  normalizeRestaurant(item.name)===requestedNormalized
+ )||null;
+
+ if(!restaurant){
+  restaurant={
+   name:requestedName,
+   description:'Your saved '+requestedName+' rewards, offers and points.',
+   info:'This restaurant was identified from a reward record saved in your Cravefolio account. Restaurant details and official website information have not yet been verified.',
+   url:null,
+   aliases:[requestedNormalized]
+  };
+ }
+}
 
 let supabaseClient=null;
 let currentRewards=[];
@@ -303,11 +295,8 @@ function addText(parent,tag,value,className=''){
  return element;
 }
 
-function normalizeRestaurant(value){
- return String(value||'').toLowerCase().replace(/[^a-z0-9]/g,'');
-}
-
 function matchesRestaurant(reward){
+ if(!restaurant||!reward)return false;
  return restaurant.aliases.includes(normalizeRestaurant(reward.restaurant));
 }
 
@@ -373,7 +362,6 @@ function safeRedemptionUrl(reward){
 
 function restaurantWebsite(reward){
  const name=normalizeRestaurant(reward.restaurant);
-
  const websites={
   mcdonalds:'https://www.mcdonalds.com/',
   starbucks:'https://www.starbucks.com/',
@@ -382,7 +370,6 @@ function restaurantWebsite(reward){
   panera:'https://www.panerabread.com/',
   panerabread:'https://www.panerabread.com/'
  };
-
  return websites[name]||null;
 }
 
@@ -461,7 +448,6 @@ function addManagement(card,reward){
 
    allRewards=allRewards.filter(item=>item.id!==reward.id);
    refreshRewards();
-
    setStatus('Reward deleted from your account.');
   }catch(error){
    feedback.textContent=error.message;
@@ -484,7 +470,6 @@ function addManagement(card,reward){
   form.className='reward-edit';
 
   const controls={};
-
   const fieldDefinitions=[
    ['restaurant','Restaurant',100],
    ['reward','Reward description',180],
@@ -501,7 +486,6 @@ function addManagement(card,reward){
    input.maxLength=max;
    input.value=reward[field]??'';
    input.name=field;
-
    label.appendChild(input);
    controls[field]=input;
   }
@@ -520,7 +504,6 @@ function addManagement(card,reward){
 
   const cancel=addText(buttons,'button','Cancel','reward-action');
   cancel.type='button';
-
   cancel.onclick=()=>{
    form.remove();
    edit.textContent='Edit';
@@ -577,7 +560,6 @@ function addManagement(card,reward){
       ?'Reward changes saved. Edited details require review.'
       :'Reward saved and moved to its updated restaurant. View it in My Rewards.'
     );
-
    }catch(error){
     feedback.textContent=error.message;
     feedback.classList.add('error');
@@ -632,7 +614,6 @@ function renderRewards(rewards){
   const expired=reward.expirationState==='expired';
 
   if(redemptionUrl&&!expired){
-
    const link=document.createElement('a');
    link.className='redemption-link';
    link.href=redemptionUrl;
@@ -649,9 +630,7 @@ function renderRewards(rewards){
      :'Opens the restaurant destination. You may need to find your offer after signing in.',
     'redemption-note'
    );
-
   }else{
-
    addText(
     card,
     'div',
@@ -680,8 +659,6 @@ function renderRewards(rewards){
    }
   }
 
-  /* Every reward receives a general destination button. */
-
   const websiteLink=document.createElement('a');
   websiteLink.className='restaurant-website-link';
 
@@ -689,11 +666,9 @@ function renderRewards(rewards){
    websiteLink.href=officialWebsite;
    websiteLink.target='_blank';
    websiteLink.rel='noopener noreferrer';
-
    websiteLink.textContent=redemptionUrl&&!expired
     ?'Restaurant Website ↗'
     :'Visit Restaurant Website ↗';
-
   }else{
    websiteLink.href='/restaurants.html';
    websiteLink.textContent='Find Restaurant →';
@@ -727,7 +702,6 @@ function renderRewards(rewards){
 function renderExpirations(rewards){
  const upcoming=upcomingRewards(rewards);
  const list=$('expirations-list');
-
  list.replaceChildren();
 
  $('expiration-count').textContent=String(upcoming.length);
@@ -743,7 +717,6 @@ function renderExpirations(rewards){
 
   addText(item,'strong',formatDate(reward.expiration));
   item.prepend(details);
-
   list.appendChild(item);
  }
 }
@@ -753,8 +726,8 @@ function renderExpirations(rewards){
 async function loadRestaurant(){
  if(!restaurant){
   $('restaurant-title').textContent='Restaurant Not Found';
-  $('restaurant-description').textContent='Choose a supported restaurant from the Cravefolio homepage.';
-  setStatus('This restaurant page is not available.',true);
+  $('restaurant-description').textContent='Return to the restaurant directory and choose a restaurant.';
+  setStatus('This restaurant page is not available. Please choose a restaurant from the directory.',true);
   return;
  }
 
@@ -762,7 +735,16 @@ async function loadRestaurant(){
  $('restaurant-title').textContent=restaurant.name+' Rewards';
  $('restaurant-description').textContent=restaurant.description;
  $('restaurant-info').textContent=restaurant.info;
- $('official-link').href=restaurant.url;
+
+ const officialLink=$('official-link');
+
+ if(restaurant.url){
+  officialLink.href=restaurant.url;
+  officialLink.hidden=false;
+ }else{
+  officialLink.removeAttribute('href');
+  officialLink.hidden=true;
+ }
 
  try{
   const library=await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8/+esm');
@@ -822,7 +804,6 @@ async function loadRestaurant(){
 }
 
 loadRestaurant();
-
 </script>
 </body>
 </html>
